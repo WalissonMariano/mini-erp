@@ -9,11 +9,12 @@ Este é um projeto de um Mini ERP (Enterprise Resource Planning) desenvolvido pa
 - **Relatórios**: Gera relatórios detalhados sobre vendas, estoque, finanças e outros aspectos do negócio.
 
 ## Tecnologias Utilizadas
-- **Backend**: Node.js com Express.js
-- **Frontend**: React.js
-- **Banco de Dados**: MongoDB
-- **Autenticação**: JWT (JSON Web Tokens)
-- **Hospedagem**: Heroku
+- **Backend**: Laravel (PHP)
+- **Frontend**: Blade (Laravel Templating Engine)
+- **Banco de Dados**: PostgreSQL
+- **Autenticação**: Laravel Sanctum
+- **Hospedagem**: Heroku (opcional)
+
 ## Instalação
 1. Clone o repositório:
 ```bash
