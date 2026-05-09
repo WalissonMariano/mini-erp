@@ -1,0 +1,12 @@
+//LISTA DE A FAZERES SISTEMA ERP
+
+criar autenticação por sessão OK
+organizar rotas por pastas OK
+componentizar elemento dos blades
+criar testes unitarios 
+
+versionamento
+react
+design patters
+ddd
+docker

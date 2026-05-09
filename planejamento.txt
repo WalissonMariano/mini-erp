@@ -1,0 +1,41 @@
+//Tabelas iniciais
+
+Modulo inicial - vendas
+Pedido de vendas
+
+Tabelas
+________________________
+order
+    id_order pk
+    id_enterprise fk
+    id_seller
+    id_client
+________________________
+order_item
+    id_item pk
+    str_name
+    id_unit
+    dbl
+
+________________________
+item
+
+
+________________________
+
+item_unit
+
+________________________
+client
+
+________________________
+seller
+
+________________________
+user
+
+________________________
+enterprise
+
+
+Cadastro
