@@ -1,84 +1,145 @@
 <?php
 
 namespace App\Http\Controllers\Estoque;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
+use App\Models\Estoque\Embalagens;
+use App\Models\Estoque\Itens;
+use App\Models\Estoque\ItensCategorias;
+use App\Models\Estoque\ItensEmbalagem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class ItensController extends Controller
 {
-        // Busca todos vendedores
+    // Busca todos itens
     public function index()
     {
-        $vendedores = Vendedores::with('empresa')->orderBy('str_nome')->get();
-        return view('vendedores/index_vendedores', compact('vendedores'));
+        $itens = Itens::with('categoria')
+            ->orderBy('str_descricao')
+            ->get();
+
+        return view('estoque/itens/index_itens', compact('itens'));
     }
 
-    // Busca vendedor por id para edição
+    // Busca item por id para edição
     public function edit($id)
     {
-        $vendedor = Vendedores::findOrFail($id);
-        $empresa = Empresa::findOrFail($vendedor->empresa_id);
-        return view('cadastro/vendedores/form_vendedores', compact('vendedor', 'empresa'));
+        $item = Itens::with('itensEmbalagens')->findOrFail($id);
+        $categorias = ItensCategorias::orderBy('str_descricao')->get();
+        $embalagens = Embalagens::orderBy('str_sigla')->get();
+        $embalagensSelecionadas = $item->itensEmbalagens->pluck('embalagem_id')->all();
+
+        return view('estoque/itens/form_itens', compact('item', 'categorias', 'embalagens', 'embalagensSelecionadas'));
     }
 
-    // Formulário de criação de vendedor    
+    // Formulário de criação de item
     public function create()
     {
-        $empresas = Empresa::all();
-        return view('cadastro/vendedores/form_vendedores', compact('empresas'));
+        $categorias = ItensCategorias::orderBy('str_descricao')->get();
+        $embalagens = Embalagens::orderBy('str_sigla')->get();
+
+        return view('estoque/itens/form_itens', [
+            'categorias' => $categorias,
+            'item' => null,
+            'embalagens' => $embalagens,
+            'embalagensSelecionadas' => [],
+        ]);
     }
 
-    // Salva dados de um novo vendedor
+    // Salva dados de um novo item
     public function store(Request $request)
     {
+        $this->normalizarEmbalagemIdsNaRequest($request);
+
         $validated = $request->validate([
-            'str_nome' => 'required|string|max:150',
-            'str_cpf' => 'required|string|unique:vendedores|max:14',
-            'str_email' => 'required|email|unique:vendedores|max:120',
-            'str_telefone' => 'nullable|string|max:20',
-            'str_logradouro' => 'nullable|string|max:255',
-            'str_numero' => 'nullable|string|max:20',
-            'str_bairro' => 'nullable|string|max:100',
-            'str_cidade' => 'nullable|string|max:100',
-            'str_estado' => 'nullable|string|max:2',
-            'empresa_id' => 'required|uuid|exists:empresa,id',
+            'str_codigo' => 'required|string|max:50|unique:itens,str_codigo',
+            'str_descricao' => 'required|string|max:150',
+            'dbl_preco' => 'required|numeric|min:0',
+            'categoria_id' => 'required|uuid|exists:itens_categorias,id',
+            'embalagem_ids' => ['nullable', 'array', 'distinct'],
+            'embalagem_ids.*' => 'uuid|exists:embalagens,id',
         ]);
 
-        Vendedores::create($validated);
+        $embalagemIds = $validated['embalagem_ids'] ?? [];
+        unset($validated['embalagem_ids']);
 
-        return redirect()->route('pagina.lista.vendedores')->with('success', 'Vendedor criado com sucesso!');
+        DB::transaction(function () use ($validated, $embalagemIds) {
+            $item = Itens::create($validated);
+            $this->syncItemEmbalagens($item, $embalagemIds);
+        });
+
+        return redirect()->route('pagina.lista.itens')->with('success', 'Item criado com sucesso!');
     }
 
-    // Atualiza os dados do vendedor
+    // Atualiza os dados do item
     public function update(Request $request, $id)
     {
-        $vendedor = Vendedores::findOrFail($id);
-        
+        $item = Itens::findOrFail($id);
+
+        $this->normalizarEmbalagemIdsNaRequest($request);
+
         $validated = $request->validate([
-            'str_nome' => 'required|string|max:150',
-            'str_cpf' => 'required|string|max:14|unique:vendedores,str_cpf,'.$vendedor->id,
-            'str_email' => 'required|email|max:120|unique:vendedores,str_email,'.$vendedor->id,
-            'str_telefone' => 'nullable|string|max:20',
-            'str_logradouro' => 'nullable|string|max:255',
-            'str_numero' => 'nullable|string|max:20',
-            'str_bairro' => 'nullable|string|max:100',
-            'str_cidade' => 'nullable|string|max:100',
-            'str_estado' => 'nullable|string|max:2',
-            'empresa_id' => 'required|uuid|exists:empresa,id',
+            'str_codigo' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('itens', 'str_codigo')->ignore($item->id),
+            ],
+            'str_descricao' => 'required|string|max:150',
+            'dbl_preco' => 'required|numeric|min:0',
+            'categoria_id' => 'required|uuid|exists:itens_categorias,id',
+            'embalagem_ids' => ['nullable', 'array', 'distinct'],
+            'embalagem_ids.*' => 'uuid|exists:embalagens,id',
         ]);
 
-        $vendedor->update($validated);
+        $embalagemIds = $validated['embalagem_ids'] ?? [];
+        unset($validated['embalagem_ids']);
 
-        return redirect()->route('pagina.lista.vendedores')->with('success', 'Vendedor atualizado com sucesso!');
+        DB::transaction(function () use ($item, $validated, $embalagemIds) {
+            $item->update($validated);
+            $this->syncItemEmbalagens($item, $embalagemIds);
+        });
+
+        return redirect()->route('pagina.lista.itens')->with('success', 'Item atualizado com sucesso!');
     }
 
-    // Deleta vendedor
+    // Deleta item
     public function destroy($id)
     {
-        $vendedor = Vendedores::findOrFail($id);
-        $vendedor->delete();
+        $item = Itens::findOrFail($id);
+        $item->itensEmbalagens()->delete();
+        $item->delete();
 
-        return redirect()->route('pagina.lista.vendedores')->with('success', 'Vendedor deletado com sucesso!');
+        return redirect()->route('pagina.lista.itens')->with('success', 'Item deletado com sucesso!');
+    }
+
+    /**
+     * @param  array<int|string|null>  $embalagemIds
+     */
+    private function syncItemEmbalagens(Itens $item, array $embalagemIds): void
+    {
+        $ids = array_values(array_filter($embalagemIds, fn ($id) => $id !== null && $id !== ''));
+        $item->itensEmbalagens()->delete();
+        foreach ($ids as $embalagemId) {
+            ItensEmbalagem::create([
+                'item_id' => $item->id,
+                'embalagem_id' => $embalagemId,
+            ]);
+        }
+    }
+
+    private function normalizarEmbalagemIdsNaRequest(Request $request): void
+    {
+        $raw = $request->input('embalagem_ids');
+        if (! is_array($raw)) {
+            $request->merge(['embalagem_ids' => []]);
+
+            return;
+        }
+
+        $filtrado = array_values(array_filter($raw, fn ($v) => $v !== null && $v !== ''));
+        $request->merge(['embalagem_ids' => $filtrado]);
     }
 }

@@ -70,6 +70,25 @@ Route::middleware(['auth'])->group(function () {
     // Rotas de categorias de itens
     require __DIR__ . '/estoque/itens_categorias/itens_categorias.php';
 
+    // Rotas de itens
+    require __DIR__ . '/estoque/itens/itens.php';
+
+    // Rotas de itens embalagens
+    require __DIR__ . '/estoque/itens_embalagens/itens_embalagens.php';
+
+    // Rotas de fornecedores
+    require __DIR__ . '/cadastro/fornecedores/fornecedores.php';
+
+    // Rotas de pedidos de venda (cabeçalho + itens no mesmo formulário)
+    require __DIR__ . '/vendas/pedidos_venda/pedidos_venda.php';
+
+    // Rotas de pedidos de compra (cabeçalho + itens no mesmo formulário)
+    require __DIR__ . '/compras/pedidos_compra/pedidos_compra.php';
+
+    // Financeiro — contas a pagar e a receber
+    require __DIR__ . '/financeiro/contas_pagar/contas_pagar.php';
+    require __DIR__ . '/financeiro/contas_receber/contas_receber.php';
+
 });
 
 // Rota fallback para páginas não encontradas

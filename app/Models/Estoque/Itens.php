@@ -23,6 +23,11 @@ class Itens extends Model
 
     public function categoria()
     {
-        return $this->belongsTo(Categoria::class, 'categoria_id');
+        return $this->belongsTo(ItensCategorias::class, 'categoria_id');
+    }
+
+    public function itensEmbalagens()
+    {
+        return $this->hasMany(ItensEmbalagem::class, 'item_id');
     }
 }

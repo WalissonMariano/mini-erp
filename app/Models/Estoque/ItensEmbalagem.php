@@ -26,6 +26,6 @@ class ItensEmbalagem extends Model
 
     public function embalagem()
     {
-        return $this->belongsTo(Embalagem::class, 'embalagem_id');
+        return $this->belongsTo(Embalagens::class, 'embalagem_id');
     }
 }

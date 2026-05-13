@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Marketplace com entrega — demonstração de interface">
+  <title>Marketplace · Entrega</title>
+  <style>
+    :root {
+      --bg-page: #f5f5f5;
+      --bg-elevated: #ffffff;
+      --border: #ebebeb;
+      --border-strong: #e0e0e0;
+      --text: #1a1a1a;
+      --text-secondary: #717171;
+      --text-tertiary: #a3a3a3;
+      --brand: #ea1d2c;
+      --brand-hover: #d01826;
+      --brand-soft: #fde8ea;
+      --success: #0f9d58;
+      --success-soft: #e8f5e9;
+      --star: #ffb500;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-pill: 999px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.08);
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --focus: 2px solid #1a73e8;
+      --focus-offset: 2px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg-page);
+      min-height: 100vh;
+    }
+
+    a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    :focus-visible {
+      outline: var(--focus);
+      outline-offset: var(--focus-offset);
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    .skip-link:focus {
+      position: fixed;
+      left: 1rem;
+      top: 1rem;
+      width: auto;
+      height: auto;
+      padding: 0.75rem 1rem;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 600;
+      z-index: 1000;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+    }
+
+    .logo .dot {
+      color: var(--brand);
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      max-width: 440px;
+      position: relative;
+    }
+
+    .search-wrap label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    .search {
+      width: 100%;
+      padding: 0.7rem 1rem 0.7rem 2.85rem;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-pill);
+      background: #f3f3f3;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .search:focus {
+      outline: none;
+      border-color: var(--brand);
+      background: var(--bg-elevated);
+      box-shadow: 0 0 0 3px var(--brand-soft);
+    }
+
+    .search::placeholder { color: var(--text-tertiary); }
+
+    .search-wrap::before {
+      content: "";
+      position: absolute;
+      left: 1.05rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.15rem;
+      height: 1.15rem;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23717171'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") center / contain no-repeat;
+      pointer-events: none;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-sm);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: var(--brand);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(234, 29, 44, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-hover);
+      box-shadow: 0 3px 12px rgba(234, 29, 44, 0.4);
+    }
+
+    .btn-ghost {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+
+    .btn-ghost:hover { background: #fafafa; }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1rem 1.25rem 2.5rem;
+    }
+
+    .address-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .address-strip .pin {
+      display: inline-flex;
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .address-strip button.link {
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      font-weight: 700;
+      color: var(--brand);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .delivery-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1rem;
+      padding: 1rem 1.15rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .delivery-bar strong {
+      display: block;
+      font-size: 0.9375rem;
+      color: var(--text);
+    }
+
+    .delivery-bar p {
+      margin: 0.2rem 0 0;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .eta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      background: var(--success-soft);
+      color: var(--success);
+      border-radius: var(--radius-pill);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    .eta svg {
+      flex-shrink: 0;
+    }
+
+    .promo-banner {
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(105deg, #ea1d2c 0%, #ff6b6b 50%, #ff9f66 100%);
+      color: #fff;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1.25rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .promo-banner h2 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .promo-banner p {
+      margin: 0.2rem 0 0;
+      font-size: 0.875rem;
+      opacity: 0.95;
+      max-width: 36ch;
+    }
+
+    .promo-banner .btn-light {
+      margin-left: auto;
+      background: #fff;
+      color: var(--brand);
+      border: none;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-pill);
+      font-weight: 800;
+      font: inherit;
+      font-size: 0.875rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .promo-banner .btn-light:hover { filter: brightness(0.97); }
+
+    .hero {
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      margin: 0 0 0.35rem;
+      font-size: clamp(1.35rem, 3.5vw, 1.65rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .hero .lead {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      max-width: 48ch;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .chip {
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .chip:hover {
+      border-color: #ccc;
+      color: var(--text);
+    }
+
+    .chip[aria-pressed="true"] {
+      background: var(--brand-soft);
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title a {
+      font-size: 0.8125rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+      gap: 1rem;
+    }
+
+    article.card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    article.card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .card-thumb {
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-thumb.a {
+      background: linear-gradient(145deg, #ff9a56 0%, #ff6a3d 45%, #ea1d2c 100%);
+    }
+
+    .card-thumb.b {
+      background: linear-gradient(145deg, #ffd93d 0%, #ffb347 40%, #ff8c42 100%);
+    }
+
+    .card-thumb.c {
+      background: linear-gradient(145deg, #a8e063 0%, #56ab2f 100%);
+    }
+
+    .badge-free {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--success);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.6875rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      text-shadow: none;
+    }
+
+    .card-body {
+      padding: 0.85rem 1rem 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-body h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .rating-row .star {
+      color: var(--star);
+      font-weight: 700;
+    }
+
+    .meta {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.65rem;
+    }
+
+    .meta span + span::before {
+      content: " · ";
+    }
+
+    .price-row {
+      margin-top: auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-top: 0.35rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .price {
+      font-weight: 800;
+      font-size: 0.9375rem;
+      color: var(--text);
+    }
+
+    .price .fee {
+      color: var(--success);
+    }
+
+    .price small {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-top: 0.15rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 0.95rem;
+      font-size: 0.8125rem;
+      border-radius: var(--radius-pill);
+    }
+
+    footer {
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn, .chip, article.card { transition: none; }
+      .btn:active, article.card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo-principal">Ir para o conteúdo</a>
+
+  <header>
+    <div class="header-inner">
+      <a class="logo" href="#" aria-current="page">mercado<span class="dot">.</span>erp</a>
+      <div class="search-wrap">
+        <label for="busca">Buscar restaurantes ou pratos</label>
+        <input class="search" type="search" id="busca" name="q" placeholder="Busque por item ou loja" autocomplete="off" enterkeyhint="search">
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-ghost" aria-label="Carrinho, 0 itens">Carrinho</button>
+        <button type="button" class="btn btn-primary">Entrar</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo-principal">
+    <div class="address-strip">
+      <span class="pin" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21s7-4.35 7-10a7 7 0 10-14 0c0 5.65 7 10 7 10z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="12" cy="11" r="2.5" fill="currentColor"/>
+        </svg>
+      </span>
+      <span>Entregar em <strong>Rua Exemplo, 123</strong> · Centro</span>
+      <button type="button" class="link">Trocar</button>
+    </div>
+
+    <section class="delivery-bar" aria-labelledby="delivery-heading">
+      <div>
+        <strong id="delivery-heading">Tempo estimado na sua região</strong>
+        <p>Varia conforme distância, fila do restaurante e trânsito.</p>
+      </div>
+      <span class="eta" title="Previsão de entrega">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 8v4l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        25–40 min
+      </span>
+    </section>
+
+    <section class="promo-banner" aria-labelledby="promo-titulo">
+      <div>
+        <h2 id="promo-titulo">Frete grátis nas primeiras compras</h2>
+        <p>Exemplo de faixa promocional — comum em apps de delivery para destacar benefício.</p>
+      </div>
+      <button type="button" class="btn-light">Ver ofertas</button>
+    </section>
+
+    <section class="hero" aria-labelledby="titulo-principal">
+      <h1 id="titulo-principal">Restaurantes e mercados perto de você</h1>
+      <p class="lead">Visual claro, fotos apetitosas e informação de tempo/taxa na hora da escolha — padrão que usuários já conhecem em apps de comida.</p>
+    </section>
+
+    <div class="filters" role="toolbar" aria-label="Filtros rápidos">
+      <button type="button" class="chip" aria-pressed="true">Para você</button>
+      <button type="button" class="chip" aria-pressed="false">Entrega rápida</button>
+      <button type="button" class="chip" aria-pressed="false">Menor taxa</button>
+      <button type="button" class="chip" aria-pressed="false">Aberto agora</button>
+      <button type="button" class="chip" aria-pressed="false">Super lojas</button>
+    </div>
+
+    <section aria-labelledby="sec-lojas">
+      <div class="section-title">
+        <h2 id="sec-lojas">Lojas em destaque</h2>
+        <a href="#">Ver todas</a>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="card-thumb a" role="img" aria-label="Fachada ou prato da Padaria Central">
+            <span class="badge-free">Grátis</span>
+          </div>
+          <div class="card-body">
+            <h3>Padaria Central</h3>
+            <div class="rating-row">
+              <span class="star" aria-hidden="true">★</span>
+              <span>4,8</span>
+              <span>·</span>
+              <span>Padaria</span>
+            </div>
+            <p class="meta"><span>1,2 km</span><span>Pães e lanches</span></p>
+            <div class="price-row">
+              <div class="price">
+                <span class="fee">Grátis</span>
+                <small>25–35 min</small>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm">Ver cardápio</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-thumb b" role="img" aria-label="Fachada ou prato do Mercado Express"></div>
+          <div class="card-body">
+            <h3>Mercado Express</h3>
+            <div class="rating-row">
+              <span class="star" aria-hidden="true">★</span>
+              <span>4,6</span>
+              <span>·</span>
+              <span>Mercado</span>
+            </div>
+            <p class="meta"><span>2,0 km</span><span>Marmitas e bebidas</span></p>
+            <div class="price-row">
+              <div class="price">
+                Taxa R$&nbsp;6,99
+                <small>30–45 min</small>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm">Ver cardápio</button>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-thumb c" role="img" aria-label="Fachada ou produtos da Farmácia Saúde"></div>
+          <div class="card-body">
+            <h3>Farmácia Saúde</h3>
+            <div class="rating-row">
+              <span class="star" aria-hidden="true">★</span>
+              <span>4,9</span>
+              <span>·</span>
+              <span>Farmácia</span>
+            </div>
+            <p class="meta"><span>800 m</span><span>Medicamentos</span></p>
+            <div class="price-row">
+              <div class="price">
+                Taxa R$&nbsp;3,90
+                <small>20–30 min</small>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm">Ver loja</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Demonstração de estilo (claro + vermelho + verde de tempo) inspirada na experiência de apps de delivery — sem uso de marca de terceiros.</p>
+  </footer>
+
+  <script>
+    (function () {
+      document.querySelectorAll(".chip").forEach(function (chip) {
+        chip.addEventListener("click", function () {
+          document.querySelectorAll(".chip").forEach(function (c) {
+            c.setAttribute("aria-pressed", c === chip ? "true" : "false");
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
