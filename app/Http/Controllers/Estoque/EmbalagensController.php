@@ -12,20 +12,20 @@ class EmbalagensController extends Controller
     public function index()
     {
         $embalagens = Embalagens::all();
-        return view('estoque/embalagens/index_embalagens', compact('embalagens'));
+        return view('estoque/embalagens/index-embalagens', compact('embalagens'));
     }
 
     // Busca embalagem por id para edição
     public function edit($id)
     {
         $embalagem = Embalagens::findOrFail($id);
-        return view('estoque/embalagens/form_embalagens', compact('embalagem'));
+        return view('estoque/embalagens/form-embalagens', compact('embalagem'));
     }
 
     // Formulário de criação de embalagem    
     public function create()
     {
-        return view('estoque/embalagens/form_embalagens');
+        return view('estoque/embalagens/form-embalagens');
     }
 
     // Salva dados de uma nova embalagem

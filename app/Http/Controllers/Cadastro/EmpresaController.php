@@ -13,7 +13,7 @@ class EmpresaController extends Controller
     {
        $empresas = Empresa::all();
     
-       return view('cadastro/empresa/index_empresa', compact('empresas'));
+       return view('cadastro/empresa/index-empresa', compact('empresas'));
     }
 
     //BUSCA DE UMA EMPRESA PELO ID PARA EDIÇÃO
@@ -21,14 +21,14 @@ class EmpresaController extends Controller
     {
 
        $empresa = Empresa::findOrFail($id);
-       return view('cadastro/empresa/form_empresa', compact('empresa'));
+       return view('cadastro/empresa/form-empresa', compact('empresa'));
         
     }
 
     //EXIBIÇÃO DO FORMULÁRIO DE CADASTRO DE EMPRESA
     public function create()
     {
-        return view('cadastro/empresa/form_empresa');
+        return view('cadastro/empresa/form-empresa');
     }
 
     //SALVA DADOS DE UMA NOVA EMPRESA

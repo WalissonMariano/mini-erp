@@ -23,7 +23,7 @@ class PedidosVendaController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return view('vendas.pedidos_venda.index_pedidos_vendas', compact('pedidosVenda'));
+        return view('vendas.pedidos-venda.index-pedidos-vendas', compact('pedidosVenda'));
     }
 
     public function create()
@@ -35,7 +35,7 @@ class PedidosVendaController extends Controller
         $catalogoItens = Itens::orderBy('str_descricao')->get();
         $itensFormRows = $this->itensFormRowsFromOldOrDefault(null, request());
 
-        return view('vendas.pedidos_venda.form_pedidos_vendas', compact(
+        return view('vendas.pedidos-venda.form-pedidos-vendas', compact(
             'pedidoVenda',
             'empresas',
             'clientes',
@@ -54,7 +54,7 @@ class PedidosVendaController extends Controller
         $catalogoItens = Itens::orderBy('str_descricao')->get();
         $itensFormRows = $this->itensFormRowsFromOldOrDefault($pedidoVenda, request());
 
-        return view('vendas.pedidos_venda.form_pedidos_vendas', compact(
+        return view('vendas.pedidos-venda.form-pedidos-vendas', compact(
             'pedidoVenda',
             'empresas',
             'clientes',

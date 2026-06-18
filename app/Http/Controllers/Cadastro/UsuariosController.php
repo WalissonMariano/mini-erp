@@ -14,7 +14,7 @@ class UsuariosController extends Controller
     public function index()
     {
         $usuarios = Usuarios::with(['empresa:id,str_razao_social', 'grupo:id,str_nome'])->get();
-        return view('cadastro/usuarios/index_usuarios', compact('usuarios'));
+        return view('cadastro/usuarios/index-usuarios', compact('usuarios'));
     }
 
     //Busca de um usuário pelo ID para edição
@@ -23,7 +23,7 @@ class UsuariosController extends Controller
         $usuario = Usuarios::findOrFail($id);
         $empresa = Empresa::findOrFail($usuario->empresa_id);
         $grupo = Grupos::findOrFail($usuario->grupo_id);
-        return view('cadastro/usuarios/form_usuarios', compact('usuario', 'empresa', 'grupo'));
+        return view('cadastro/usuarios/form-usuarios', compact('usuario', 'empresa', 'grupo'));
     }
 
     //Exibição do formulário de cadastro de usuário
@@ -31,7 +31,7 @@ class UsuariosController extends Controller
     {
         $empresas = Empresa::orderBy('str_razao_social')->get();
         $grupos = Grupos::orderBy('str_nome')->get();
-        return view('cadastro/usuarios/form_usuarios', compact('empresas', 'grupos'));
+        return view('cadastro/usuarios/form-usuarios', compact('empresas', 'grupos'));
     }
 
     //Salva dados de um novo usuário

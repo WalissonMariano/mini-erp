@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('dashboard-conteudo', function () {
-        return view('dashboard.index_dashboard');
+        return view('dashboard.index-dashboard');
     })->name('pagina.dashboard.conteudo');
 
 

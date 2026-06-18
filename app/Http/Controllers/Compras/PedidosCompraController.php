@@ -22,7 +22,7 @@ class PedidosCompraController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return view('compras.pedidos_compra.index_pedidos_compras', compact('pedidosCompra'));
+        return view('compras.pedidos-compra.index-pedidos-compras', compact('pedidosCompra'));
     }
 
     public function create()
@@ -33,7 +33,7 @@ class PedidosCompraController extends Controller
         $catalogoItens = Itens::orderBy('str_descricao')->get();
         $itensFormRows = $this->itensFormRowsFromOldOrDefault(null, request());
 
-        return view('compras.pedidos_compra.form_pedidos_compras', compact(
+        return view('compras.pedidos-compra.form-pedidos-compras', compact(
             'pedidoCompra',
             'empresas',
             'fornecedores',
@@ -50,7 +50,7 @@ class PedidosCompraController extends Controller
         $catalogoItens = Itens::orderBy('str_descricao')->get();
         $itensFormRows = $this->itensFormRowsFromOldOrDefault($pedidoCompra, request());
 
-        return view('compras.pedidos_compra.form_pedidos_compras', compact(
+        return view('compras.pedidos-compra.form-pedidos-compras', compact(
             'pedidoCompra',
             'empresas',
             'fornecedores',

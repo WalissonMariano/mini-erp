@@ -18,7 +18,7 @@ class ContasPagarController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return view('financeiro.contas_pagar.index_contas_pagar', compact('contas'));
+        return view('financeiro.contas-pagar.index-contas-pagar', compact('contas'));
     }
 
     public function create()
@@ -27,7 +27,7 @@ class ContasPagarController extends Controller
         $empresas = Empresa::orderBy('str_razao_social')->get();
         $fornecedores = Fornecedores::orderBy('str_nome')->get();
 
-        return view('financeiro.contas_pagar.form_contas_pagar', compact('conta', 'empresas', 'fornecedores'));
+        return view('financeiro.contas-pagar.form-contas-pagar', compact('conta', 'empresas', 'fornecedores'));
     }
 
     public function edit($id)
@@ -36,7 +36,7 @@ class ContasPagarController extends Controller
         $empresas = Empresa::orderBy('str_razao_social')->get();
         $fornecedores = Fornecedores::orderBy('str_nome')->get();
 
-        return view('financeiro.contas_pagar.form_contas_pagar', compact('conta', 'empresas', 'fornecedores'));
+        return view('financeiro.contas-pagar.form-contas-pagar', compact('conta', 'empresas', 'fornecedores'));
     }
 
     public function store(Request $request)

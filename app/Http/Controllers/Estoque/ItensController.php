@@ -20,7 +20,7 @@ class ItensController extends Controller
             ->orderBy('str_descricao')
             ->get();
 
-        return view('estoque/itens/index_itens', compact('itens'));
+        return view('estoque/itens/index-itens', compact('itens'));
     }
 
     // Busca item por id para edição
@@ -31,7 +31,7 @@ class ItensController extends Controller
         $embalagens = Embalagens::orderBy('str_sigla')->get();
         $embalagensSelecionadas = $item->itensEmbalagens->pluck('embalagem_id')->all();
 
-        return view('estoque/itens/form_itens', compact('item', 'categorias', 'embalagens', 'embalagensSelecionadas'));
+        return view('estoque/itens/form-itens', compact('item', 'categorias', 'embalagens', 'embalagensSelecionadas'));
     }
 
     // Formulário de criação de item
@@ -40,7 +40,7 @@ class ItensController extends Controller
         $categorias = ItensCategorias::orderBy('str_descricao')->get();
         $embalagens = Embalagens::orderBy('str_sigla')->get();
 
-        return view('estoque/itens/form_itens', [
+        return view('estoque/itens/form-itens', [
             'categorias' => $categorias,
             'item' => null,
             'embalagens' => $embalagens,

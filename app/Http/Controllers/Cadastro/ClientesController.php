@@ -15,7 +15,7 @@ class ClientesController extends Controller
     public function index()
     {
         $clientes = Clientes::with('empresa')->orderBy('str_nome')->get();
-        return view('cadastro/clientes/index_clientes', compact('clientes'));
+        return view('cadastro/clientes/index-clientes', compact('clientes'));
     }
 
     // Busca cliente por id para edição
@@ -23,14 +23,14 @@ class ClientesController extends Controller
     {
         $cliente = Clientes::findOrFail($id);
         $empresa = Empresa::findOrFail($cliente->empresa_id);
-        return view('cadastro/clientes/form_clientes', compact('cliente', 'empresa'));
+        return view('cadastro/clientes/form-clientes', compact('cliente', 'empresa'));
     }
 
     // Formulário de criação de cliente
     public function create()
     {
         $empresas = Empresa::all();
-        return view('cadastro/clientes/form_clientes', compact('empresas'));
+        return view('cadastro/clientes/form-clientes', compact('empresas'));
     }
 
     // Salva dados de um novo cliente

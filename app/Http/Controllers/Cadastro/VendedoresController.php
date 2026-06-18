@@ -13,7 +13,7 @@ class VendedoresController extends Controller
     public function index()
     {
         $vendedores = Vendedores::with('empresa')->orderBy('str_nome')->get();
-        return view('cadastro/vendedores/index_vendedores', compact('vendedores'));
+        return view('cadastro/vendedores/index-vendedores', compact('vendedores'));
     }
 
     // Busca vendedor por id para edição
@@ -21,14 +21,14 @@ class VendedoresController extends Controller
     {
         $vendedor = Vendedores::findOrFail($id);
         $empresa = Empresa::findOrFail($vendedor->empresa_id);
-        return view('cadastro/vendedores/form_vendedores', compact('vendedor', 'empresa'));
+        return view('cadastro/vendedores/form-vendedores', compact('vendedor', 'empresa'));
     }
 
     // Formulário de criação de vendedor    
     public function create()
     {
         $empresas = Empresa::all();
-        return view('cadastro/vendedores/form_vendedores', compact('empresas'));
+        return view('cadastro/vendedores/form-vendedores', compact('empresas'));
     }
 
     // Salva dados de um novo vendedor

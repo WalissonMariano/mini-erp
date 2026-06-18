@@ -14,7 +14,7 @@ class FornecedoresController extends Controller
     public function index()
     {
         $fornecedores = Fornecedores::with('empresa')->orderBy('str_nome')->get();
-        return view('cadastro/fornecedores/index_fornecedores', compact('fornecedores'));
+        return view('cadastro/fornecedores/index-fornecedores', compact('fornecedores'));
     }
 
     //Busca fornecedor por id para edição
@@ -23,7 +23,7 @@ class FornecedoresController extends Controller
         $fornecedor = Fornecedores::findOrFail($id);
         $empresas = Empresa::orderBy('str_razao_social')->get();
 
-        return view('cadastro/fornecedores/form_fornecedores', compact('fornecedor', 'empresas'));
+        return view('cadastro/fornecedores/form-fornecedores', compact('fornecedor', 'empresas'));
     }
     
     //Formulário de criação de fornecedor
@@ -31,7 +31,7 @@ class FornecedoresController extends Controller
     {
         $empresas = Empresa::orderBy('str_razao_social')->get();
 
-        return view('cadastro/fornecedores/form_fornecedores', [
+        return view('cadastro/fornecedores/form-fornecedores', [
             'empresas' => $empresas,
             'fornecedor' => null,
         ]);

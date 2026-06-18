@@ -12,20 +12,20 @@ class ItensCategoriasController extends Controller
     public function index()
     {
         $itensCategorias = ItensCategorias::all();
-        return view('estoque/itens_categorias/index_itens_categorias', compact('itensCategorias'));
+        return view('estoque/itens-categorias/index-itens-categorias', compact('itensCategorias'));
     }
 
     // Busca categoria por id para edição
     public function edit($id)
     {
         $itensCategorias = ItensCategorias::findOrFail($id);
-        return view('estoque/itens_categorias/form_itens_categorias', compact('itensCategorias'));
+        return view('estoque/itens-categorias/form-itens-categorias', compact('itensCategorias'));
     }
 
     // Formulário de criação de categoria    
     public function create()
     {
-        return view('estoque/itens_categorias/form_itens_categorias');
+        return view('estoque/itens-categorias/form-itens-categorias');
     }
 
     // Salva dados de uma nova categoria

@@ -5,8 +5,30 @@ organizar rotas por pastas OK
 componentizar elemento dos blades
 criar testes unitarios 
 
-versionamento
+versionamento (
+    Tipos de fluxos de trabalho:
+
+    1 - Feature Branch
+    2 - Git Flow
+    3 - Trunk-Based
+)
+
 react
 design patters
 ddd
 docker
+
+proximos passos
+1º componentizar (alguns modulos)
+2º testes unitarios (alguns modulos)
+3º ajustar todos cruds e inserir logica de negocio
+
+4º Adicionar permissoes
+5º Tratar front-end
+________________________________________________________
+
+Passos futuros:
+
+Criar api
+Criar front-end react
+Adicionar docker

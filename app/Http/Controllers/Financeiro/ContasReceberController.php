@@ -18,7 +18,7 @@ class ContasReceberController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return view('financeiro.contas_receber.index_contas_receber', compact('contas'));
+        return view('financeiro.contas-receber.index-contas-receber', compact('contas'));
     }
 
     public function create()
@@ -27,7 +27,7 @@ class ContasReceberController extends Controller
         $empresas = Empresa::orderBy('str_razao_social')->get();
         $clientes = Clientes::orderBy('str_nome')->get();
 
-        return view('financeiro.contas_receber.form_contas_receber', compact('conta', 'empresas', 'clientes'));
+        return view('financeiro.contas-receber.form-contas-receber', compact('conta', 'empresas', 'clientes'));
     }
 
     public function edit($id)
@@ -36,7 +36,7 @@ class ContasReceberController extends Controller
         $empresas = Empresa::orderBy('str_razao_social')->get();
         $clientes = Clientes::orderBy('str_nome')->get();
 
-        return view('financeiro.contas_receber.form_contas_receber', compact('conta', 'empresas', 'clientes'));
+        return view('financeiro.contas-receber.form-contas-receber', compact('conta', 'empresas', 'clientes'));
     }
 
     public function store(Request $request)

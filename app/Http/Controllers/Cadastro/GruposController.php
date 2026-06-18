@@ -12,20 +12,20 @@ class GruposController extends Controller
     public function index()
     {
         $grupos = Grupos::all();
-        return view('cadastro/grupos/index_grupos', compact('grupos'));
+        return view('cadastro/grupos/index-grupos', compact('grupos'));
     }
     
     //Busca de um grupo pelo ID para edição
     public function edit($id)
     {
         $grupo = Grupos::findOrFail($id);
-        return view('cadastro/grupos/form_grupos', compact('grupo'));
+        return view('cadastro/grupos/form-grupos', compact('grupo'));
     }
 
     //Exibição do formulário de cadastro de grupo
     public function create()
     {
-        return view('cadastro/grupos/form_grupos');
+        return view('cadastro/grupos/form-grupos');
     }
 
     //Salva dados de um novo grupo

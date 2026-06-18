@@ -15,7 +15,7 @@ class ItensEmbalagensController extends Controller
     {
         $itensEmbalagens = ItensEmbalagem::with('item', 'embalagem')->get();
 
-        return view('estoque/itens_embalagens/index_itens_embalagens', compact('itensEmbalagens'));
+        return view('estoque/itens-embalagens/index-itens-embalagens', compact('itensEmbalagens'));
     }
 
     // Busca itens embalagem por id para edição
@@ -25,7 +25,7 @@ class ItensEmbalagensController extends Controller
         $itens = Itens::orderBy('str_descricao')->get();
         $embalagens = Embalagens::orderBy('str_sigla')->get();
 
-        return view('estoque/itens_embalagens/form_itens_embalagens', compact('itensEmbalagem', 'itens', 'embalagens'));
+        return view('estoque/itens-embalagens/form-itens-embalagens', compact('itensEmbalagem', 'itens', 'embalagens'));
     }
 
     // Formulário de criação de itens embalagens
@@ -34,7 +34,7 @@ class ItensEmbalagensController extends Controller
         $itens = Itens::orderBy('str_descricao')->get();
         $embalagens = Embalagens::orderBy('str_sigla')->get();
 
-        return view('estoque/itens_embalagens/form_itens_embalagens', compact('itens', 'embalagens'));
+        return view('estoque/itens-embalagens/form-itens-embalagens', compact('itens', 'embalagens'));
     }
 
     // Salva dados de um novo itens embalagem

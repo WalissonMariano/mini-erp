@@ -1,41 +1,10 @@
-//Tabelas iniciais
+melhorar todos os index
+melhorar todos os form
+trocar _ por - nas views OK
+finalizar cadastro item
+criar crup de vendas
+criar crud de componentizar
+colocar compra e a venda para gerar financeiro
+colocar relatorio de contagem de estoque 
+corrigir dashboard
 
-Modulo inicial - vendas
-Pedido de vendas
-
-Tabelas
-________________________
-order
-    id_order pk
-    id_enterprise fk
-    id_seller
-    id_client
-________________________
-order_item
-    id_item pk
-    str_name
-    id_unit
-    dbl
-
-________________________
-item
-
-
-________________________
-
-item_unit
-
-________________________
-client
-
-________________________
-seller
-
-________________________
-user
-
-________________________
-enterprise
-
-
-Cadastro

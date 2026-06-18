@@ -1,0 +1,15 @@
+:root {
+    --app-bg: #f1f5f9;
+    --app-surface: #ffffff;
+    --app-border: #e2e8f0;
+    --line: #e2e8f0;
+    --app-text: #0f172a;
+    --app-text-muted: #64748b;
+    --app-accent: #0c4a6e;
+    --app-accent-soft: #0369a1;
+    --app-accent-hover: #075985;
+    --app-success: #0f766e;
+    --app-success-hover: #0d9488;
+    --app-radius: 10px;
+    --app-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+}
