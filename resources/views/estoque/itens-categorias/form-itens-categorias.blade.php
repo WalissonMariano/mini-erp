@@ -23,6 +23,12 @@
                     {{ $isEdit ? 'Atualize a descrição da categoria de itens.' : 'Preencha os dados para cadastrar uma nova categoria.' }}
                 </p>
             </div>
+            @if ($isEdit)
+                <button type="button" class="app-btn app-btn--secondary" onclick="loadContent('{{ route('pagina.lista.itens_categorias') }}')">
+                    <x-icon name="heroicon-o-arrow-left" class="app-icon" />
+                    Voltar
+                </button>
+            @endif
         </header>
 
         <div class="app-form">
@@ -54,9 +60,22 @@
                 @endif
 
                 <div class="app-form-toolbar">
-                    <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.itens_categorias') }}')">Cancelar</button>
+                    @unless ($isEdit)
+                        <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.itens_categorias') }}')">Cancelar</button>
+                    @endunless
+                    @if ($isEdit)
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--danger"
+                            formaction="{{ route('pagina.deletar.itens_categorias', ['id' => $categoria->id]) }}"
+                            name="_method"
+                            value="DELETE"
+                            onclick="return confirm('Excluir esta categoria permanentemente?')">
+                            Excluir categoria
+                        </button>
+                    @endif
                     <button class="app-btn app-btn--primary" type="submit">
-                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar categoria' }}
+                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar' }}
                     </button>
                 </div>
 

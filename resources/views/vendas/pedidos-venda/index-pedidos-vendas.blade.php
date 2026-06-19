@@ -38,7 +38,14 @@
                                 <td>{{ $pedido->data_pedido?->format('d/m/Y') ?? '—' }}</td>
                                 <td>
                                     @if ($pedido->status)
-                                        <span class="app-status">{{ $pedido->status }}</span>
+                                        @php
+                                            $statusClass = match ($pedido->status) {
+                                                \App\Models\Venda\PedidosVenda::STATUS_ABERTO => 'app-status--aberto',
+                                                \App\Models\Venda\PedidosVenda::STATUS_BAIXADO => 'app-status--baixado',
+                                                default => '',
+                                            };
+                                        @endphp
+                                        <span class="app-status {{ $statusClass }}">{{ $pedido->status_label }}</span>
                                     @else
                                         —
                                     @endif

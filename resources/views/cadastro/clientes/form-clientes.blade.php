@@ -28,6 +28,12 @@
                     {{ $isEdit ? 'Atualize os dados cadastrais do cliente.' : 'Preencha os dados para cadastrar um novo cliente.' }}
                 </p>
             </div>
+            @if ($isEdit)
+                <button type="button" class="app-btn app-btn--secondary" onclick="loadContent('{{ route('pagina.lista.clientes') }}')">
+                    <x-icon name="heroicon-o-arrow-left" class="app-icon" />
+                    Voltar
+                </button>
+            @endif
         </header>
 
         <div class="app-form">
@@ -59,9 +65,22 @@
                 @endif
 
                 <div class="app-form-toolbar">
-                    <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.clientes') }}')">Cancelar</button>
+                    @unless ($isEdit)
+                        <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.clientes') }}')">Cancelar</button>
+                    @endunless
+                    @if ($isEdit)
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--danger"
+                            formaction="{{ route('pagina.deletar.cliente', ['id' => $cliente->id]) }}"
+                            name="_method"
+                            value="DELETE"
+                            onclick="return confirm('Excluir este cliente permanentemente?')">
+                            Excluir cliente
+                        </button>
+                    @endif
                     <button class="app-btn app-btn--primary" type="submit">
-                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar cliente' }}
+                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar' }}
                     </button>
                 </div>
 

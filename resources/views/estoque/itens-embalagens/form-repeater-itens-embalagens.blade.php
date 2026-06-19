@@ -45,12 +45,14 @@
                             </div>
                         </td>
                         <td class="app-repeater__col-acoes">
-                            <button type="button" class="app-repeater__remove embalagem-remover-linha" title="Remover linha">Remover</button>
+                            <button type="button" class="app-repeater__remove embalagem-remover-linha" title="Remover embalagem" aria-label="Remover embalagem">
+                                <x-icon name="heroicon-o-trash" class="app-icon" />
+                            </button>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
-    <button type="button" class="app-repeater__add" id="embalagem-add-linha">+ Adicionar linha</button>
+    <button type="button" class="app-repeater__add" id="embalagem-add-linha">Incluir Embalagem</button>
 @endif

@@ -87,14 +87,84 @@
     border: 1px solid var(--line);
     box-sizing: border-box;
     min-height: 34px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.app-repeater__table td.app-repeater__col-num > input:focus,
+.app-repeater__table td.app-repeater__col-num > input:focus-visible {
+    outline: none;
+    border-color: #0369a1;
+    box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.12);
+    background: #fff;
+}
+
+.app-repeater__table .app-repeater__field select:focus,
+.app-repeater__table .app-repeater__field select:focus-visible {
+    outline: none;
+    border-color: #0369a1;
+    box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.12);
+    background: #fff;
 }
 
 .app-repeater__table td select {
     min-height: 40px;
 }
 
+.app-repeater__money {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fafc;
+    min-height: 34px;
+    overflow: hidden;
+}
+
+.app-repeater__money-prefix {
+    padding: 8px 0 8px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--app-text-muted);
+    flex-shrink: 0;
+}
+
+.app-repeater__table .app-repeater__money input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding-left: 6px;
+    text-align: right;
+}
+
+.app-repeater__table .app-repeater__money input:focus,
+.app-repeater__table .app-repeater__money input:focus-visible,
+.app-repeater__table .app-repeater__money .pv-valor-unitario:focus,
+.app-repeater__table .app-repeater__money .pv-valor-unitario:focus-visible,
+.app-repeater__table .app-repeater__money .pc-valor-unitario:focus,
+.app-repeater__table .app-repeater__money .pc-valor-unitario:focus-visible {
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+
+.app-repeater__money:focus-within {
+    border-color: #0369a1;
+    box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.12);
+    background: #fff;
+}
+
 .app-repeater__remove {
-    padding: 7px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
     font-size: 0.75rem;
     font-weight: 600;
     background: #fff;
@@ -103,6 +173,11 @@
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.app-repeater__remove .app-icon {
+    width: 1rem;
+    height: 1rem;
 }
 
 .app-repeater__remove:hover {

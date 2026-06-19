@@ -14,6 +14,10 @@ class PedidosVenda extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public const STATUS_ABERTO = 'A';
+
+    public const STATUS_BAIXADO = 'B';
+
     protected $table = 'pedidos_venda';
 
     protected $keyType = 'string';
@@ -54,5 +58,23 @@ class PedidosVenda extends Model
     public function itens()
     {
         return $this->hasMany(PedidosVendaItens::class, 'pedidos_venda_id');
+    }
+
+    public static function statusLabels(): array
+    {
+        return [
+            self::STATUS_ABERTO => 'Aberto',
+            self::STATUS_BAIXADO => 'Baixado',
+        ];
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::statusLabels()[$this->status] ?? (string) $this->status;
+    }
+
+    public function isAberto(): bool
+    {
+        return $this->status === self::STATUS_ABERTO;
     }
 }

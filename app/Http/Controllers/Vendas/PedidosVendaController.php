@@ -12,6 +12,7 @@ use App\Models\Venda\PedidosVendaItens;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class PedidosVendaController extends Controller
 {
@@ -82,10 +83,10 @@ class PedidosVendaController extends Controller
 
         $validated = $request->validate([
             'empresa_id' => 'required|uuid|exists:empresa,id',
-            'cliente_id' => 'nullable|uuid|exists:clientes,id',
-            'vendedor_id' => 'nullable|uuid|exists:vendedores,id',
+            'cliente_id' => 'required|uuid|exists:clientes,id',
+            'vendedor_id' => 'required|uuid|exists:vendedores,id',
             'data_pedido' => 'required|date',
-            'status' => 'required|string|max:20',
+            'status' => ['required', 'string', Rule::in([PedidosVenda::STATUS_ABERTO, PedidosVenda::STATUS_BAIXADO])],
             'str_observacao' => 'nullable|string',
             'itens' => 'required|array|min:1',
             'itens.*.itens_id' => 'required|uuid|exists:itens,id',
@@ -94,6 +95,7 @@ class PedidosVendaController extends Controller
         ]);
 
         $cabecalho = $this->normalizarCabecalho($validated);
+        $cabecalho['status'] = PedidosVenda::STATUS_ABERTO;
 
         DB::transaction(function () use ($cabecalho, $linhas) {
             $pedido = PedidosVenda::create($cabecalho);
@@ -124,10 +126,10 @@ class PedidosVendaController extends Controller
 
         $validated = $request->validate([
             'empresa_id' => 'required|uuid|exists:empresa,id',
-            'cliente_id' => 'nullable|uuid|exists:clientes,id',
-            'vendedor_id' => 'nullable|uuid|exists:vendedores,id',
+            'cliente_id' => 'required|uuid|exists:clientes,id',
+            'vendedor_id' => 'required|uuid|exists:vendedores,id',
             'data_pedido' => 'required|date',
-            'status' => 'required|string|max:20',
+            'status' => ['required', 'string', Rule::in([PedidosVenda::STATUS_ABERTO, PedidosVenda::STATUS_BAIXADO])],
             'str_observacao' => 'nullable|string',
             'itens' => 'required|array|min:1',
             'itens.*.itens_id' => 'required|uuid|exists:itens,id',
@@ -137,6 +139,12 @@ class PedidosVendaController extends Controller
 
         $cabecalho = $this->normalizarCabecalho($validated);
 
+        if ($pedidoVenda->status === PedidosVenda::STATUS_BAIXADO && $cabecalho['status'] !== PedidosVenda::STATUS_BAIXADO) {
+            return back()
+                ->withErrors(['status' => 'Pedido baixado não pode ser reaberto.'])
+                ->withInput();
+        }
+
         DB::transaction(function () use ($pedidoVenda, $cabecalho, $linhas) {
             $pedidoVenda->update($cabecalho);
             $pedidoVenda->itens()->forceDelete();
@@ -145,6 +153,20 @@ class PedidosVendaController extends Controller
         });
 
         return redirect()->route('pagina.lista.pedidos_venda')->with('success', 'Pedido de venda atualizado com sucesso!');
+    }
+
+    public function baixar($id)
+    {
+        $pedidoVenda = PedidosVenda::findOrFail($id);
+
+        if ($pedidoVenda->status !== PedidosVenda::STATUS_ABERTO) {
+            return back()->withErrors(['status' => 'Apenas pedidos abertos podem ser baixados.']);
+        }
+
+        $pedidoVenda->update(['status' => PedidosVenda::STATUS_BAIXADO]);
+
+        return redirect()->route('pagina.editar.pedido_venda', ['id' => $pedidoVenda->id])
+            ->with('success', 'Pedido baixado com sucesso!');
     }
 
     public function destroy($id)
@@ -189,8 +211,8 @@ class PedidosVendaController extends Controller
             'str_observacao' => $validated['str_observacao'] ?? null,
             'dbl_valor_total' => 0,
         ];
-        $out['cliente_id'] = ($validated['cliente_id'] ?? '') !== '' ? $validated['cliente_id'] : null;
-        $out['vendedor_id'] = ($validated['vendedor_id'] ?? '') !== '' ? $validated['vendedor_id'] : null;
+        $out['cliente_id'] = $validated['cliente_id'];
+        $out['vendedor_id'] = $validated['vendedor_id'];
 
         return $out;
     }

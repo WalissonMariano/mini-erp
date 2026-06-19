@@ -23,6 +23,12 @@
                     {{ $isEdit ? 'Atualize os dados e permissões do usuário.' : 'Preencha os dados para cadastrar um novo usuário.' }}
                 </p>
             </div>
+            @if ($isEdit)
+                <button type="button" class="app-btn app-btn--secondary" onclick="loadContent('{{ route('pagina.lista.usuarios') }}')">
+                    <x-icon name="heroicon-o-arrow-left" class="app-icon" />
+                    Voltar
+                </button>
+            @endif
         </header>
 
         <div class="app-form">
@@ -54,9 +60,22 @@
                 @endif
 
                 <div class="app-form-toolbar">
-                    <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.usuarios') }}')">Cancelar</button>
+                    @unless ($isEdit)
+                        <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.usuarios') }}')">Cancelar</button>
+                    @endunless
+                    @if ($isEdit)
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--danger"
+                            formaction="{{ route('pagina.deletar.usuarios', ['id' => $usuario->id]) }}"
+                            name="_method"
+                            value="DELETE"
+                            onclick="return confirm('Excluir este usuário permanentemente?')">
+                            Excluir usuário
+                        </button>
+                    @endif
                     <button class="app-btn app-btn--primary" type="submit">
-                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar usuário' }}
+                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar' }}
                     </button>
                 </div>
 

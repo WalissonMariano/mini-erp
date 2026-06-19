@@ -221,7 +221,7 @@ body {
     text-transform: capitalize;
 }
 
-.app-status:not(.app-status--active):not(.app-status--inactive):not(.app-status--aberto):not(.app-status--pago):not(.app-status--cancelado) {
+.app-status:not(.app-status--active):not(.app-status--inactive):not(.app-status--aberto):not(.app-status--pago):not(.app-status--cancelado):not(.app-status--baixado) {
     background: #ecfdf5;
     color: #047857;
 }
@@ -249,6 +249,11 @@ body {
 .app-status--cancelado {
     background: #fef2f2;
     color: #b91c1c;
+}
+
+.app-status--baixado {
+    background: #ecfdf5;
+    color: #047857;
 }
 
 .app-empty td {

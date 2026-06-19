@@ -18,8 +18,9 @@ class ItensCategoriasController extends Controller
     // Busca categoria por id para edição
     public function edit($id)
     {
-        $itensCategorias = ItensCategorias::findOrFail($id);
-        return view('estoque/itens-categorias/form-itens-categorias', compact('itensCategorias'));
+        $categoria = ItensCategorias::findOrFail($id);
+
+        return view('estoque/itens-categorias/form-itens-categorias', compact('categoria'));
     }
 
     // Formulário de criação de categoria    

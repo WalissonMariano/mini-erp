@@ -11,6 +11,7 @@ use App\Models\Estoque\Itens;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class PedidosCompraController extends Controller
 {
@@ -76,9 +77,9 @@ class PedidosCompraController extends Controller
 
         $validated = $request->validate([
             'empresa_id' => 'required|uuid|exists:empresa,id',
-            'fornecedores_id' => 'nullable|uuid|exists:fornecedores,id',
+            'fornecedores_id' => 'required|uuid|exists:fornecedores,id',
             'data_pedido' => 'required|date',
-            'status' => 'required|string|max:20',
+            'status' => ['required', 'string', Rule::in([PedidosCompra::STATUS_ABERTO, PedidosCompra::STATUS_BAIXADO])],
             'str_observacao' => 'nullable|string',
             'itens' => 'required|array|min:1',
             'itens.*.item_id' => 'required|uuid|exists:itens,id',
@@ -87,6 +88,7 @@ class PedidosCompraController extends Controller
         ]);
 
         $cabecalho = $this->normalizarCabecalho($validated);
+        $cabecalho['status'] = PedidosCompra::STATUS_ABERTO;
 
         DB::transaction(function () use ($cabecalho, $linhas) {
             $pedido = PedidosCompra::create($cabecalho);
@@ -116,9 +118,9 @@ class PedidosCompraController extends Controller
 
         $validated = $request->validate([
             'empresa_id' => 'required|uuid|exists:empresa,id',
-            'fornecedores_id' => 'nullable|uuid|exists:fornecedores,id',
+            'fornecedores_id' => 'required|uuid|exists:fornecedores,id',
             'data_pedido' => 'required|date',
-            'status' => 'required|string|max:20',
+            'status' => ['required', 'string', Rule::in([PedidosCompra::STATUS_ABERTO, PedidosCompra::STATUS_BAIXADO])],
             'str_observacao' => 'nullable|string',
             'itens' => 'required|array|min:1',
             'itens.*.item_id' => 'required|uuid|exists:itens,id',
@@ -127,6 +129,12 @@ class PedidosCompraController extends Controller
         ]);
 
         $cabecalho = $this->normalizarCabecalho($validated);
+
+        if ($pedidoCompra->status === PedidosCompra::STATUS_BAIXADO && $cabecalho['status'] !== PedidosCompra::STATUS_BAIXADO) {
+            return back()
+                ->withErrors(['status' => 'Pedido baixado não pode ser reaberto.'])
+                ->withInput();
+        }
 
         DB::transaction(function () use ($pedidoCompra, $cabecalho, $linhas) {
             $pedidoCompra->update($cabecalho);
@@ -175,12 +183,12 @@ class PedidosCompraController extends Controller
     {
         $out = [
             'empresa_id' => $validated['empresa_id'],
+            'fornecedores_id' => $validated['fornecedores_id'],
             'data_pedido' => $validated['data_pedido'],
             'status' => $validated['status'],
             'str_observacao' => $validated['str_observacao'] ?? null,
             'dbl_valor_total' => 0,
         ];
-        $out['fornecedores_id'] = ($validated['fornecedores_id'] ?? '') !== '' ? $validated['fornecedores_id'] : null;
 
         return $out;
     }

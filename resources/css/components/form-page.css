@@ -9,6 +9,27 @@
     border-color: #cbd5e1;
 }
 
+a.app-btn {
+    text-decoration: none;
+}
+
+.app-btn .app-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.app-btn--danger {
+    background: #fff;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+.app-btn--danger:hover {
+    background: #fef2f2;
+    border-color: #f87171;
+    color: #991b1b;
+}
+
 .app-form {
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -47,11 +68,32 @@
     justify-content: flex-end;
     gap: 10px;
     padding: 10px 16px;
-    border-bottom: 1px solid var(--line);
+    border-top: 1px solid var(--line);
     background: #f8fafc;
+    order: 3;
+}
+
+.app-form--toolbar-top .app-form-toolbar {
+    order: 0;
+    border-top: none;
+    border-bottom: 1px solid var(--line);
+}
+
+.app-form--toolbar-top .app-form-hero {
+    order: 1;
+}
+
+.app-form--toolbar-top .app-form-body {
+    order: 2;
+}
+
+.app-form > form {
+    display: flex;
+    flex-direction: column;
 }
 
 .app-form-hero {
+    order: 1;
     margin: 14px 16px;
     padding: 10px 14px;
     background: #f4f7fb;
@@ -68,6 +110,7 @@
 .app-form-body {
     padding: 4px 16px 18px;
     font-size: 0.8125rem;
+    order: 2;
 }
 
 .app-section-title {
@@ -98,6 +141,11 @@
 
 .app-field-group--three {
     grid-template-columns: 1fr 1fr 1fr;
+}
+
+.app-field--numero-pedido input {
+    font-size: 0.75rem;
+    letter-spacing: -0.02em;
 }
 
 .app-field label {
@@ -150,7 +198,7 @@
     }
 
     .app-form-toolbar {
-        flex-direction: column-reverse;
+        flex-direction: column;
         align-items: stretch;
     }
 

@@ -23,6 +23,12 @@
                     {{ $isEdit ? 'Atualize os dados do grupo de usuários.' : 'Preencha os dados para cadastrar um novo grupo.' }}
                 </p>
             </div>
+            @if ($isEdit)
+                <button type="button" class="app-btn app-btn--secondary" onclick="loadContent('{{ route('pagina.lista.grupos') }}')">
+                    <x-icon name="heroicon-o-arrow-left" class="app-icon" />
+                    Voltar
+                </button>
+            @endif
         </header>
 
         <div class="app-form">
@@ -54,9 +60,22 @@
                 @endif
 
                 <div class="app-form-toolbar">
-                    <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.grupos') }}')">Cancelar</button>
+                    @unless ($isEdit)
+                        <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.grupos') }}')">Cancelar</button>
+                    @endunless
+                    @if ($isEdit)
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--danger"
+                            formaction="{{ route('pagina.deletar.grupos', ['id' => $grupo->id]) }}"
+                            name="_method"
+                            value="DELETE"
+                            onclick="return confirm('Excluir este grupo permanentemente?')">
+                            Excluir grupo
+                        </button>
+                    @endif
                     <button class="app-btn app-btn--primary" type="submit">
-                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar grupo' }}
+                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar' }}
                     </button>
                 </div>
 

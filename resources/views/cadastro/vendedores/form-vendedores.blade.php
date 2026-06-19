@@ -28,6 +28,12 @@
                     {{ $isEdit ? 'Atualize os dados cadastrais do vendedor.' : 'Preencha os dados para cadastrar um novo vendedor.' }}
                 </p>
             </div>
+            @if ($isEdit)
+                <button type="button" class="app-btn app-btn--secondary" onclick="loadContent('{{ route('pagina.lista.vendedores') }}')">
+                    <x-icon name="heroicon-o-arrow-left" class="app-icon" />
+                    Voltar
+                </button>
+            @endif
         </header>
 
         <div class="app-form">
@@ -59,9 +65,22 @@
                 @endif
 
                 <div class="app-form-toolbar">
-                    <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.vendedores') }}')">Cancelar</button>
+                    @unless ($isEdit)
+                        <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.vendedores') }}')">Cancelar</button>
+                    @endunless
+                    @if ($isEdit)
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--danger"
+                            formaction="{{ route('pagina.deletar.vendedores', ['id' => $vendedor->id]) }}"
+                            name="_method"
+                            value="DELETE"
+                            onclick="return confirm('Excluir este vendedor permanentemente?')">
+                            Excluir vendedor
+                        </button>
+                    @endif
                     <button class="app-btn app-btn--primary" type="submit">
-                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar vendedor' }}
+                        {{ $isEdit ? 'Salvar alterações' : 'Cadastrar' }}
                     </button>
                 </div>
 

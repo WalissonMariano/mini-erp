@@ -17,5 +17,8 @@ Route::post('salvar-pedido-venda', [PedidosVendaController::class, 'store'])
 Route::put('atualizar-pedido-venda/{id}', [PedidosVendaController::class, 'update'])
     ->name('pagina.atualizar.pedido_venda');
 
+Route::put('baixar-pedido-venda/{id}', [PedidosVendaController::class, 'baixar'])
+    ->name('pagina.baixar.pedido_venda');
+
 Route::delete('deletar-pedido-venda/{id}', [PedidosVendaController::class, 'destroy'])
     ->name('pagina.deletar.pedido_venda');
