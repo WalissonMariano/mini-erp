@@ -75,22 +75,13 @@ class PedidosCompraController extends Controller
 
         $request->merge(['itens' => $linhas->values()->all()]);
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'fornecedores_id' => 'required|uuid|exists:fornecedores,id',
-            'data_pedido' => 'required|date',
-            'status' => ['required', 'string', Rule::in([PedidosCompra::STATUS_ABERTO, PedidosCompra::STATUS_BAIXADO])],
-            'str_observacao' => 'nullable|string',
-            'itens' => 'required|array|min:1',
-            'itens.*.item_id' => 'required|uuid|exists:itens,id',
-            'itens.*.dbl_quantidade' => 'required|numeric|min:0',
-            'itens.*.dbl_valor_unitario' => 'required|numeric|min:0',
-        ]);
+        $validated = $this->validarPedido($request);
 
         $cabecalho = $this->normalizarCabecalho($validated);
         $cabecalho['status'] = PedidosCompra::STATUS_ABERTO;
 
         DB::transaction(function () use ($cabecalho, $linhas) {
+            $cabecalho['numero_pedido'] = PedidosCompra::proximoNumeroPedido();
             $pedido = PedidosCompra::create($cabecalho);
             $this->gravarLinhasItens($pedido, $linhas);
             $this->atualizarTotalPedido($pedido);
@@ -116,17 +107,7 @@ class PedidosCompraController extends Controller
 
         $request->merge(['itens' => $linhas->values()->all()]);
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'fornecedores_id' => 'required|uuid|exists:fornecedores,id',
-            'data_pedido' => 'required|date',
-            'status' => ['required', 'string', Rule::in([PedidosCompra::STATUS_ABERTO, PedidosCompra::STATUS_BAIXADO])],
-            'str_observacao' => 'nullable|string',
-            'itens' => 'required|array|min:1',
-            'itens.*.item_id' => 'required|uuid|exists:itens,id',
-            'itens.*.dbl_quantidade' => 'required|numeric|min:0',
-            'itens.*.dbl_valor_unitario' => 'required|numeric|min:0',
-        ]);
+        $validated = $this->validarPedido($request);
 
         $cabecalho = $this->normalizarCabecalho($validated);
 
@@ -144,6 +125,20 @@ class PedidosCompraController extends Controller
         });
 
         return redirect()->route('pagina.lista.pedidos_compra')->with('success', 'Pedido de compra atualizado com sucesso!');
+    }
+
+    public function baixar($id)
+    {
+        $pedidoCompra = PedidosCompra::findOrFail($id);
+
+        if ($pedidoCompra->status !== PedidosCompra::STATUS_ABERTO) {
+            return back()->withErrors(['status' => 'Apenas pedidos abertos podem ser baixados.']);
+        }
+
+        $pedidoCompra->update(['status' => PedidosCompra::STATUS_BAIXADO]);
+
+        return redirect()->route('pagina.editar.pedido_compra', ['id' => $pedidoCompra->id])
+            ->with('success', 'Pedido baixado com sucesso!');
     }
 
     public function destroy($id)
@@ -179,6 +174,46 @@ class PedidosCompraController extends Controller
             ->filter(fn ($r) => is_array($r) && ! empty($r['item_id']));
     }
 
+    private function validarPedido(Request $request): array
+    {
+        return $request->validate(
+            [
+                'empresa_id' => 'required|uuid|exists:empresa,id',
+                'fornecedores_id' => 'required|uuid|exists:fornecedores,id',
+                'data_pedido' => 'required|date',
+                'status' => ['required', 'string', Rule::in([PedidosCompra::STATUS_ABERTO, PedidosCompra::STATUS_BAIXADO])],
+                'str_observacao' => 'nullable|string',
+                'itens' => 'required|array|min:1',
+                'itens.*.item_id' => 'required|uuid|exists:itens,id',
+                'itens.*.dbl_quantidade' => 'required|numeric|min:0',
+                'itens.*.dbl_valor_unitario' => 'required|numeric|min:0',
+            ],
+            [
+                'empresa_id.required' => 'Selecione a empresa.',
+                'fornecedores_id.required' => 'Selecione o fornecedor.',
+                'data_pedido.required' => 'Informe a data do pedido.',
+                'itens.*.item_id.required' => 'Selecione o produto na linha :position.',
+                'itens.*.dbl_quantidade.required' => 'Informe a quantidade na linha :position.',
+                'itens.*.dbl_quantidade.numeric' => 'A quantidade na linha :position deve ser numérica.',
+                'itens.*.dbl_quantidade.min' => 'A quantidade na linha :position não pode ser negativa.',
+                'itens.*.dbl_valor_unitario.required' => 'Informe o valor unitário na linha :position.',
+                'itens.*.dbl_valor_unitario.numeric' => 'O valor unitário na linha :position deve ser numérico.',
+                'itens.*.dbl_valor_unitario.min' => 'O valor unitário na linha :position não pode ser negativo.',
+            ],
+            [
+                'empresa_id' => 'empresa',
+                'fornecedores_id' => 'fornecedor',
+                'data_pedido' => 'data do pedido',
+                'status' => 'status',
+                'str_observacao' => 'observação',
+                'itens' => 'itens do pedido',
+                'itens.*.item_id' => 'produto',
+                'itens.*.dbl_quantidade' => 'quantidade',
+                'itens.*.dbl_valor_unitario' => 'valor unitário',
+            ]
+        );
+    }
+
     private function normalizarCabecalho(array $validated): array
     {
         $out = [
@@ -200,8 +235,7 @@ class PedidosCompraController extends Controller
             $u = (float) $row['dbl_valor_unitario'];
             $total = round($q * $u, 2);
 
-            PedidosCompraItens::create([
-                'pedido_compra_id' => $pedido->id,
+            $pedido->itens()->create([
                 'item_id' => $row['item_id'],
                 'dbl_quantidade' => $q,
                 'dbl_valor_unitario' => $u,

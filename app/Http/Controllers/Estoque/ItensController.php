@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Estoque\Embalagens;
 use App\Models\Estoque\Itens;
 use App\Models\Estoque\ItensCategorias;
-use App\Models\Estoque\ItensEmbalagem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -123,8 +122,7 @@ class ItensController extends Controller
         $ids = array_values(array_filter($embalagemIds, fn ($id) => $id !== null && $id !== ''));
         $item->itensEmbalagens()->delete();
         foreach ($ids as $embalagemId) {
-            ItensEmbalagem::create([
-                'item_id' => $item->id,
+            $item->itensEmbalagens()->create([
                 'embalagem_id' => $embalagemId,
             ]);
         }

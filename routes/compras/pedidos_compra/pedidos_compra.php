@@ -17,5 +17,8 @@ Route::post('salvar-pedido-compra', [PedidosCompraController::class, 'store'])
 Route::put('atualizar-pedido-compra/{id}', [PedidosCompraController::class, 'update'])
     ->name('pagina.atualizar.pedido_compra');
 
+Route::put('baixar-pedido-compra/{id}', [PedidosCompraController::class, 'baixar'])
+    ->name('pagina.baixar.pedido_compra');
+
 Route::delete('deletar-pedido-compra/{id}', [PedidosCompraController::class, 'destroy'])
     ->name('pagina.deletar.pedido_compra');

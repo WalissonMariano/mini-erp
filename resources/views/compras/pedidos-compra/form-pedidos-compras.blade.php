@@ -17,6 +17,7 @@
         $statusAtual = \App\Models\Compras\PedidosCompra::STATUS_ABERTO;
     }
     $statusLabel = \App\Models\Compras\PedidosCompra::statusLabels()[$statusAtual] ?? $statusAtual;
+    $pedidoAberto = $statusAtual === \App\Models\Compras\PedidosCompra::STATUS_ABERTO;
     $dataPedido = old('data_pedido', optional($pedidoCompra)->data_pedido?->format('Y-m-d') ?? now()->format('Y-m-d'));
     $dataPedidoLabel = \Illuminate\Support\Carbon::parse($dataPedido)->format('d/m/Y');
 @endphp
@@ -72,6 +73,15 @@
                     @unless ($isEdit)
                         <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.pedidos_compra') }}')">Cancelar</button>
                     @endunless
+                    @if ($isEdit && $pedidoAberto && Route::has('pagina.baixar.pedido_compra'))
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--secondary"
+                            formaction="{{ route('pagina.baixar.pedido_compra', ['id' => $pedidoCompra->id]) }}"
+                            onclick="return confirm('Baixar este pedido de compra?')">
+                            Baixar pedido
+                        </button>
+                    @endif
                     @if ($isEdit)
                         <button
                             type="submit"
@@ -94,7 +104,7 @@
                         <div class="app-field app-field--numero-pedido">
                             <label for="pedido_numero">Número do pedido</label>
                             <input type="text" id="pedido_numero"
-                                value="{{ $isEdit ? $pedidoCompra->id : '-' }}"
+                                value="{{ $isEdit ? $pedidoCompra->numero_pedido : '-' }}"
                                 readonly disabled>
                         </div>
                         <div class="app-field">

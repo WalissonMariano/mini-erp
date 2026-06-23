@@ -1,10 +1,11 @@
-melhorar todos os index
-melhorar todos os form
+melhorar todos os index OK
+melhorar todos os form OK
 trocar _ por - nas views OK
-finalizar cadastro item
-criar crup de vendas
-criar crud de componentizar
-colocar compra e a venda para gerar financeiro
+finalizar cadastro item OK
+corrigir dashboard OK
+criar crud de vendas 
+criar crud de compras
+colocar compra e a venda para gerar financeiro (botao baixar pedido troca status e gere financeiro)
 colocar relatorio de contagem de estoque 
-corrigir dashboard
+
 

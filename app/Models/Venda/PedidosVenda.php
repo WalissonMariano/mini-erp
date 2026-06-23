@@ -8,6 +8,7 @@ use App\Models\Cadastro\Vendedores;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class PedidosVenda extends Model
 {
@@ -26,6 +27,7 @@ class PedidosVenda extends Model
 
     protected $fillable = [
         'id',
+        'numero_pedido',
         'empresa_id',
         'cliente_id',
         'vendedor_id',
@@ -38,7 +40,17 @@ class PedidosVenda extends Model
     protected $casts = [
         'data_pedido' => 'date',
         'dbl_valor_total' => 'decimal:2',
+        'numero_pedido' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $model): void {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
 
     public function empresa()
     {
@@ -76,5 +88,16 @@ class PedidosVenda extends Model
     public function isAberto(): bool
     {
         return $this->status === self::STATUS_ABERTO;
+    }
+
+    public static function proximoNumeroPedido(): int
+    {
+        $ultimo = static::withTrashed()
+            ->whereNotNull('numero_pedido')
+            ->orderByDesc('numero_pedido')
+            ->lockForUpdate()
+            ->value('numero_pedido');
+
+        return (int) ($ultimo ?? 0) + 1;
     }
 }

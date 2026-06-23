@@ -18,12 +18,13 @@
                     <thead>
                         <tr>
                             <th class="col-acoes">Editar</th>
-                            <th>Data</th>
-                            <th>Status</th>
-                            <th>Fornecedor</th>
+                            <th>Número</th>
                             <th>Empresa</th>
+                            <th>Data</th>
+                            <th>Fornecedor</th>
                             <th class="col-qtd">Itens</th>
                             <th class="col-valor">Valor total</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,22 +35,30 @@
                                         <x-icon name="heroicon-o-pencil-square" class="app-icon" />
                                     </button>
                                 </td>
+                                <td>{{ $pedido->numero_pedido ?? '—' }}</td>
+                                <td>{{ $pedido->empresa?->str_razao_social ?? '—' }}</td>
                                 <td>{{ $pedido->data_pedido?->format('d/m/Y') ?? '—' }}</td>
+                                <td>{{ $pedido->fornecedor?->str_nome ?? '—' }}</td>
+                                <td class="col-qtd">{{ (int) ($pedido->itens_count ?? 0) }}</td>
+                                <td class="col-valor">R$ {{ number_format((float) ($pedido->dbl_valor_total ?? 0), 2, ',', '.') }}</td>
                                 <td>
                                     @if ($pedido->status)
-                                        <span class="app-status">{{ $pedido->status }}</span>
+                                        @php
+                                            $statusClass = match ($pedido->status) {
+                                                \App\Models\Compras\PedidosCompra::STATUS_ABERTO => 'app-status--aberto',
+                                                \App\Models\Compras\PedidosCompra::STATUS_BAIXADO => 'app-status--baixado',
+                                                default => '',
+                                            };
+                                        @endphp
+                                        <span class="app-status {{ $statusClass }}">{{ $pedido->status_label }}</span>
                                     @else
                                         —
                                     @endif
                                 </td>
-                                <td>{{ $pedido->fornecedor?->str_nome ?? '—' }}</td>
-                                <td>{{ $pedido->empresa?->str_razao_social ?? '—' }}</td>
-                                <td class="col-qtd">{{ (int) ($pedido->itens_count ?? 0) }}</td>
-                                <td class="col-valor">R$ {{ number_format((float) ($pedido->dbl_valor_total ?? 0), 2, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr class="app-empty">
-                                <td colspan="7">Nenhum pedido de compra cadastrado.</td>
+                                <td colspan="8">Nenhum pedido de compra cadastrado.</td>
                             </tr>
                         @endforelse
                     </tbody>

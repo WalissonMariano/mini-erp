@@ -4,6 +4,7 @@ namespace App\Models\Estoque;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Itens extends Model
 {
@@ -20,6 +21,15 @@ class Itens extends Model
         'dbl_preco',
         'categoria_id'
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $model): void {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
 
     public function categoria()
     {

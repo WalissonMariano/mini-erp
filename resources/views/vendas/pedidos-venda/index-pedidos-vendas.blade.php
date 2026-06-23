@@ -18,13 +18,14 @@
                     <thead>
                         <tr>
                             <th class="col-acoes">Editar</th>
+                            <th>Número</th>
+                            <th>Empresa</th>
                             <th>Data</th>
-                            <th>Status</th>
                             <th>Cliente</th>
                             <th>Vendedor</th>
-                            <th>Empresa</th>
                             <th class="col-qtd">Itens</th>
                             <th class="col-valor">Valor total</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,7 +36,13 @@
                                         <x-icon name="heroicon-o-pencil-square" class="app-icon" />
                                     </button>
                                 </td>
+                                <td>{{ $pedido->numero_pedido ?? '—' }}</td>
+                                <td>{{ $pedido->empresa?->str_razao_social ?? '—' }}</td>
                                 <td>{{ $pedido->data_pedido?->format('d/m/Y') ?? '—' }}</td>
+                                <td>{{ $pedido->cliente?->str_nome ?? '—' }}</td>
+                                <td>{{ $pedido->vendedor?->str_nome ?? '—' }}</td>
+                                <td class="col-qtd">{{ (int) ($pedido->itens_count ?? 0) }}</td>
+                                <td class="col-valor">R$ {{ number_format((float) ($pedido->dbl_valor_total ?? 0), 2, ',', '.') }}</td>
                                 <td>
                                     @if ($pedido->status)
                                         @php
@@ -50,15 +57,10 @@
                                         —
                                     @endif
                                 </td>
-                                <td>{{ $pedido->cliente?->str_nome ?? '—' }}</td>
-                                <td>{{ $pedido->vendedor?->str_nome ?? '—' }}</td>
-                                <td>{{ $pedido->empresa?->str_razao_social ?? '—' }}</td>
-                                <td class="col-qtd">{{ (int) ($pedido->itens_count ?? 0) }}</td>
-                                <td class="col-valor">R$ {{ number_format((float) ($pedido->dbl_valor_total ?? 0), 2, ',', '.') }}</td>
                             </tr>
                         @empty
                             <tr class="app-empty">
-                                <td colspan="8">Nenhum pedido de venda cadastrado.</td>
+                                <td colspan="9">Nenhum pedido de venda cadastrado.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -6,6 +6,7 @@ use App\Models\Estoque\Itens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class PedidosCompraItens extends Model
 {
@@ -32,6 +33,15 @@ class PedidosCompraItens extends Model
         'dbl_valor_unitario' => 'decimal:2',
         'dbl_valor_total' => 'decimal:2',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $model): void {
+            if (empty($model->id)) {
+                $model->id = (string) Str::uuid();
+            }
+        });
+    }
 
     public function pedidoCompra()
     {

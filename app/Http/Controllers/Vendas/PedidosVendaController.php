@@ -81,23 +81,13 @@ class PedidosVendaController extends Controller
 
         $request->merge(['itens' => $linhas->values()->all()]);
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'cliente_id' => 'required|uuid|exists:clientes,id',
-            'vendedor_id' => 'required|uuid|exists:vendedores,id',
-            'data_pedido' => 'required|date',
-            'status' => ['required', 'string', Rule::in([PedidosVenda::STATUS_ABERTO, PedidosVenda::STATUS_BAIXADO])],
-            'str_observacao' => 'nullable|string',
-            'itens' => 'required|array|min:1',
-            'itens.*.itens_id' => 'required|uuid|exists:itens,id',
-            'itens.*.dbl_quantidade' => 'required|numeric|min:0',
-            'itens.*.dbl_valor_unitario' => 'required|numeric|min:0',
-        ]);
+        $validated = $this->validarPedido($request);
 
         $cabecalho = $this->normalizarCabecalho($validated);
         $cabecalho['status'] = PedidosVenda::STATUS_ABERTO;
 
         DB::transaction(function () use ($cabecalho, $linhas) {
+            $cabecalho['numero_pedido'] = PedidosVenda::proximoNumeroPedido();
             $pedido = PedidosVenda::create($cabecalho);
             $this->gravarLinhasItens($pedido, $linhas);
             $this->atualizarTotalPedido($pedido);
@@ -124,18 +114,7 @@ class PedidosVendaController extends Controller
 
         $request->merge(['itens' => $linhas->values()->all()]);
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'cliente_id' => 'required|uuid|exists:clientes,id',
-            'vendedor_id' => 'required|uuid|exists:vendedores,id',
-            'data_pedido' => 'required|date',
-            'status' => ['required', 'string', Rule::in([PedidosVenda::STATUS_ABERTO, PedidosVenda::STATUS_BAIXADO])],
-            'str_observacao' => 'nullable|string',
-            'itens' => 'required|array|min:1',
-            'itens.*.itens_id' => 'required|uuid|exists:itens,id',
-            'itens.*.dbl_quantidade' => 'required|numeric|min:0',
-            'itens.*.dbl_valor_unitario' => 'required|numeric|min:0',
-        ]);
+        $validated = $this->validarPedido($request);
 
         $cabecalho = $this->normalizarCabecalho($validated);
 
@@ -202,6 +181,49 @@ class PedidosVendaController extends Controller
             ->filter(fn ($r) => is_array($r) && ! empty($r['itens_id']));
     }
 
+    private function validarPedido(Request $request): array
+    {
+        return $request->validate(
+            [
+                'empresa_id' => 'required|uuid|exists:empresa,id',
+                'cliente_id' => 'required|uuid|exists:clientes,id',
+                'vendedor_id' => 'required|uuid|exists:vendedores,id',
+                'data_pedido' => 'required|date',
+                'status' => ['required', 'string', Rule::in([PedidosVenda::STATUS_ABERTO, PedidosVenda::STATUS_BAIXADO])],
+                'str_observacao' => 'nullable|string',
+                'itens' => 'required|array|min:1',
+                'itens.*.itens_id' => 'required|uuid|exists:itens,id',
+                'itens.*.dbl_quantidade' => 'required|numeric|min:0',
+                'itens.*.dbl_valor_unitario' => 'required|numeric|min:0',
+            ],
+            [
+                'empresa_id.required' => 'Selecione a empresa.',
+                'cliente_id.required' => 'Selecione o cliente.',
+                'vendedor_id.required' => 'Selecione o vendedor.',
+                'data_pedido.required' => 'Informe a data do pedido.',
+                'itens.*.itens_id.required' => 'Selecione o produto na linha :position.',
+                'itens.*.dbl_quantidade.required' => 'Informe a quantidade na linha :position.',
+                'itens.*.dbl_quantidade.numeric' => 'A quantidade na linha :position deve ser numérica.',
+                'itens.*.dbl_quantidade.min' => 'A quantidade na linha :position não pode ser negativa.',
+                'itens.*.dbl_valor_unitario.required' => 'Informe o valor unitário na linha :position.',
+                'itens.*.dbl_valor_unitario.numeric' => 'O valor unitário na linha :position deve ser numérico.',
+                'itens.*.dbl_valor_unitario.min' => 'O valor unitário na linha :position não pode ser negativo.',
+            ],
+            [
+                'empresa_id' => 'empresa',
+                'cliente_id' => 'cliente',
+                'vendedor_id' => 'vendedor',
+                'data_pedido' => 'data do pedido',
+                'status' => 'status',
+                'str_observacao' => 'observação',
+                'itens' => 'itens do pedido',
+                'itens.*.itens_id' => 'produto',
+                'itens.*.dbl_quantidade' => 'quantidade',
+                'itens.*.dbl_valor_unitario' => 'valor unitário',
+            ]
+        );
+    }
+
     private function normalizarCabecalho(array $validated): array
     {
         $out = [
@@ -224,8 +246,7 @@ class PedidosVendaController extends Controller
             $u = (float) $row['dbl_valor_unitario'];
             $total = round($q * $u, 2);
 
-            PedidosVendaItens::create([
-                'pedidos_venda_id' => $pedido->id,
+            $pedido->itens()->create([
                 'itens_id' => $row['itens_id'],
                 'dbl_quantidade' => $q,
                 'dbl_valor_unitario' => $u,

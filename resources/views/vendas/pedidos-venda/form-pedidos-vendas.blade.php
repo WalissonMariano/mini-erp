@@ -104,7 +104,7 @@
                         <div class="app-field app-field--numero-pedido">
                             <label for="pedido_numero">Número do pedido</label>
                             <input type="text" id="pedido_numero"
-                                value="{{ $isEdit ? $pedidoVenda->id : '-' }}"
+                                value="{{ $isEdit ? $pedidoVenda->numero_pedido : '-' }}"
                                 readonly disabled>
                         </div>
                         <div class="app-field">
