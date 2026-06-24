@@ -16,28 +16,28 @@
                 <h3 class="dash-kpi__label">Total de clientes</h3>
                 <x-icon name="heroicon-o-users" class="dash-kpi__icon" />
             </div>
-            <p class="dash-kpi__value">1</p>
+            <p class="dash-kpi__value">{{ $totalClientes }}</p>
         </article>
         <article class="dash-kpi dash-kpi--products">
             <div class="dash-kpi__top">
                 <h3 class="dash-kpi__label">Produtos cadastrados</h3>
                 <x-icon name="heroicon-o-cube" class="dash-kpi__icon" />
             </div>
-            <p class="dash-kpi__value">0</p>
+            <p class="dash-kpi__value">{{ $totalProdutos }}</p>
         </article>
         <article class="dash-kpi dash-kpi--sales">
             <div class="dash-kpi__top">
                 <h3 class="dash-kpi__label">Vendas (período)</h3>
                 <x-icon name="heroicon-o-currency-dollar" class="dash-kpi__icon" />
             </div>
-            <p class="dash-kpi__value">R$ 0,00</p>
+            <p class="dash-kpi__value">R$ {{ number_format($vendasPeriodo, 2, ',', '.') }}</p>
         </article>
         <article class="dash-kpi dash-kpi--orders">
             <div class="dash-kpi__top">
                 <h3 class="dash-kpi__label">Pedidos</h3>
                 <x-icon name="heroicon-o-clipboard-document-list" class="dash-kpi__icon" />
             </div>
-            <p class="dash-kpi__value">0</p>
+            <p class="dash-kpi__value">{{ $totalPedidos }}</p>
         </article>
     </section>
 
@@ -73,6 +73,10 @@
 
     <script>
         (function () {
+            const chartClientesPorMes = @json($chartClientesPorMes);
+            const chartCategorias = @json($chartCategorias);
+            const chartVendasMensais = @json($chartVendasMensais);
+
             const corporate = {
                 primary: '#0c4a6e',
                 secondary: '#0369a1',
@@ -93,10 +97,10 @@
             window.clientesChartInstance = new Chart(clientesCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    labels: chartClientesPorMes.labels,
                     datasets: [{
                         label: 'Novos clientes',
-                        data: [12, 19, 8, 15, 22, 18],
+                        data: chartClientesPorMes.data,
                         borderColor: corporate.primary,
                         backgroundColor: 'rgba(12, 74, 110, 0.08)',
                         tension: 0.35,
@@ -143,10 +147,10 @@
             window.categoriasChartInstance = new Chart(categoriasCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pessoa física', 'Pessoa jurídica', 'Fornecedores'],
+                    labels: chartCategorias.labels,
                     datasets: [{
-                        data: [45, 30, 25],
-                        backgroundColor: corporate.surfaces.slice(0, 3),
+                        data: chartCategorias.data,
+                        backgroundColor: corporate.surfaces.slice(0, chartCategorias.labels.length),
                         borderColor: '#ffffff',
                         borderWidth: 2,
                         hoverOffset: 6,
@@ -176,10 +180,10 @@
             window.vendasChartInstance = new Chart(vendasCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    labels: chartVendasMensais.labels,
                     datasets: [{
                         label: 'Vendas (R$)',
-                        data: [2500, 3200, 2800, 4100, 5200, 4800],
+                        data: chartVendasMensais.data,
                         backgroundColor: corporate.surfaces,
                         borderRadius: 6,
                         borderSkipped: false,
@@ -251,9 +255,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="dash-table__empty">
-                        <td colspan="4">Nenhum cliente recente para exibir.</td>
-                    </tr>
+                    @forelse ($ultimosClientes as $cliente)
+                        <tr>
+                            <td>{{ $cliente->str_nome }}</td>
+                            <td>{{ $cliente->str_email ?: '—' }}</td>
+                            <td>{{ $cliente->str_telefone ?: '—' }}</td>
+                            <td>{{ $cliente->created_at?->format('d/m/Y') ?? '—' }}</td>
+                        </tr>
+                    @empty
+                        <tr class="dash-table__empty">
+                            <td colspan="4">Nenhum cliente recente para exibir.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

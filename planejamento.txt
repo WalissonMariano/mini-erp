@@ -10,8 +10,8 @@ criar crud contas a receber OK
 criar parametro gera financeiro ou nao OK
 colocar compras gera financeiro OK
 colocar vendas gera financeiro OK 
-colocar dashboard
-colocar permissoes por grupo
+colocar dashboard para puxar do banco OK
+colocar permissoes por grupo 
 tirar vinculo do usuario a empresa (opcional)
 colocar relatorio de contagem de estoque 
 

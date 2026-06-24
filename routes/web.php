@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Dashboard\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,9 +43,8 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Dashboard
-    Route::get('dashboard-conteudo', function () {
-        return view('dashboard.index-dashboard');
-    })->name('pagina.dashboard.conteudo');
+    Route::get('dashboard-conteudo', [DashboardController::class, 'index'])
+        ->name('pagina.dashboard.conteudo');
 
 
     //Rotas de empresa
