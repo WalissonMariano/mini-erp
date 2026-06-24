@@ -22,3 +22,4 @@ Route::put('baixar-pedido-venda/{id}', [PedidosVendaController::class, 'baixar']
 
 Route::delete('deletar-pedido-venda/{id}', [PedidosVendaController::class, 'destroy'])
     ->name('pagina.deletar.pedido_venda');
+

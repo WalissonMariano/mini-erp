@@ -41,22 +41,9 @@ class ContasReceberController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge([
-            'cliente_id' => $request->filled('cliente_id') ? $request->input('cliente_id') : null,
-        ]);
-
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'cliente_id' => 'nullable|uuid|exists:clientes,id',
-            'str_descricao' => 'nullable|string|max:255',
-            'dbl_valor' => 'required|numeric|min:0',
-            'data_vencimento' => 'required|date',
-            'data_recebimento' => 'nullable|date',
-            'status' => ['required', 'string', 'max:20', Rule::in(['aberto', 'pago', 'cancelado'])],
-            'str_observacao' => 'nullable|string',
-        ]);
-
-        $validated['cliente_id'] = $validated['cliente_id'] ?? null;
+        $validated = $this->validarConta($request);
+        $validated['status'] = ContasReceber::STATUS_ABERTO;
+        $validated['data_recebimento'] = null;
 
         ContasReceber::create($validated);
 
@@ -67,26 +54,38 @@ class ContasReceberController extends Controller
     {
         $conta = ContasReceber::findOrFail($id);
 
-        $request->merge([
-            'cliente_id' => $request->filled('cliente_id') ? $request->input('cliente_id') : null,
-        ]);
+        $validated = $this->validarConta($request, $conta);
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'cliente_id' => 'nullable|uuid|exists:clientes,id',
-            'str_descricao' => 'nullable|string|max:255',
-            'dbl_valor' => 'required|numeric|min:0',
-            'data_vencimento' => 'required|date',
-            'data_recebimento' => 'nullable|date',
-            'status' => ['required', 'string', 'max:20', Rule::in(['aberto', 'pago', 'cancelado'])],
-            'str_observacao' => 'nullable|string',
-        ]);
+        if ($conta->status === ContasReceber::STATUS_PAGO && $validated['status'] !== ContasReceber::STATUS_PAGO) {
+            return back()
+                ->withErrors(['status' => 'Título recebido não pode ser reaberto.'])
+                ->withInput();
+        }
 
-        $validated['cliente_id'] = $validated['cliente_id'] ?? null;
+        if ($conta->status !== ContasReceber::STATUS_PAGO) {
+            $validated['data_recebimento'] = null;
+        }
 
         $conta->update($validated);
 
         return redirect()->route('pagina.lista.contas_receber')->with('success', 'Conta a receber atualizada com sucesso!');
+    }
+
+    public function baixar($id)
+    {
+        $conta = ContasReceber::findOrFail($id);
+
+        if ($conta->status !== ContasReceber::STATUS_ABERTO) {
+            return back()->withErrors(['status' => 'Apenas títulos abertos podem ser baixados.']);
+        }
+
+        $conta->update([
+            'status' => ContasReceber::STATUS_PAGO,
+            'data_recebimento' => today()->toDateString(),
+        ]);
+
+        return redirect()->route('pagina.editar.conta_receber', ['id' => $conta->id])
+            ->with('success', 'Título baixado com sucesso!');
     }
 
     public function destroy($id)
@@ -95,5 +94,43 @@ class ContasReceberController extends Controller
         $conta->delete();
 
         return redirect()->route('pagina.lista.contas_receber')->with('success', 'Conta a receber excluida com sucesso!');
+    }
+
+    private function validarConta(Request $request, ?ContasReceber $conta = null): array
+    {
+        $statusAtual = old('status', optional($conta)->status ?? ContasReceber::STATUS_ABERTO);
+        if (! in_array($statusAtual, [ContasReceber::STATUS_ABERTO, ContasReceber::STATUS_PAGO, ContasReceber::STATUS_CANCELADO], true)) {
+            $statusAtual = ContasReceber::STATUS_ABERTO;
+        }
+
+        $request->merge(['status' => $statusAtual]);
+
+        return $request->validate(
+            [
+                'empresa_id' => 'required|uuid|exists:empresa,id',
+                'cliente_id' => 'required|uuid|exists:clientes,id',
+                'str_descricao' => 'required|string|max:255',
+                'dbl_valor' => 'required|numeric|min:0',
+                'data_vencimento' => 'required|date',
+                'status' => ['required', 'string', 'max:20', Rule::in([ContasReceber::STATUS_ABERTO, ContasReceber::STATUS_PAGO, ContasReceber::STATUS_CANCELADO])],
+                'str_observacao' => 'nullable|string',
+            ],
+            [
+                'empresa_id.required' => 'Selecione a empresa.',
+                'cliente_id.required' => 'Selecione o cliente.',
+                'str_descricao.required' => 'Informe a descrição.',
+                'dbl_valor.required' => 'Informe o valor.',
+                'data_vencimento.required' => 'Informe a data de vencimento.',
+            ],
+            [
+                'empresa_id' => 'empresa',
+                'cliente_id' => 'cliente',
+                'str_descricao' => 'descrição',
+                'dbl_valor' => 'valor',
+                'data_vencimento' => 'vencimento',
+                'status' => 'status',
+                'str_observacao' => 'observação',
+            ]
+        );
     }
 }

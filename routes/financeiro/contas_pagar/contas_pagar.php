@@ -17,5 +17,8 @@ Route::post('salvar-conta-pagar', [ContasPagarController::class, 'store'])
 Route::put('atualizar-conta-pagar/{id}', [ContasPagarController::class, 'update'])
     ->name('pagina.atualizar.conta_pagar');
 
+Route::put('baixar-conta-pagar/{id}', [ContasPagarController::class, 'baixar'])
+    ->name('pagina.baixar.conta_pagar');
+
 Route::delete('deletar-conta-pagar/{id}', [ContasPagarController::class, 'destroy'])
     ->name('pagina.deletar.conta_pagar');

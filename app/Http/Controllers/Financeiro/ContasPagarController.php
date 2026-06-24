@@ -41,22 +41,9 @@ class ContasPagarController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge([
-            'fornecedores_id' => $request->filled('fornecedores_id') ? $request->input('fornecedores_id') : null,
-        ]);
-
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'fornecedores_id' => 'nullable|uuid|exists:fornecedores,id',
-            'str_descricao' => 'nullable|string|max:255',
-            'dbl_valor' => 'required|numeric|min:0',
-            'data_vencimento' => 'required|date',
-            'data_pagamento' => 'nullable|date',
-            'status' => ['required', 'string', 'max:20', Rule::in(['aberto', 'pago', 'cancelado'])],
-            'str_observacao' => 'nullable|string',
-        ]);
-
-        $validated['fornecedores_id'] = $validated['fornecedores_id'] ?? null;
+        $validated = $this->validarConta($request);
+        $validated['status'] = ContasPagar::STATUS_ABERTO;
+        $validated['data_pagamento'] = null;
 
         ContasPagar::create($validated);
 
@@ -67,26 +54,38 @@ class ContasPagarController extends Controller
     {
         $conta = ContasPagar::findOrFail($id);
 
-        $request->merge([
-            'fornecedores_id' => $request->filled('fornecedores_id') ? $request->input('fornecedores_id') : null,
-        ]);
+        $validated = $this->validarConta($request, $conta);
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|uuid|exists:empresa,id',
-            'fornecedores_id' => 'nullable|uuid|exists:fornecedores,id',
-            'str_descricao' => 'nullable|string|max:255',
-            'dbl_valor' => 'required|numeric|min:0',
-            'data_vencimento' => 'required|date',
-            'data_pagamento' => 'nullable|date',
-            'status' => ['required', 'string', 'max:20', Rule::in(['aberto', 'pago', 'cancelado'])],
-            'str_observacao' => 'nullable|string',
-        ]);
+        if ($conta->status === ContasPagar::STATUS_PAGO && $validated['status'] !== ContasPagar::STATUS_PAGO) {
+            return back()
+                ->withErrors(['status' => 'Título pago não pode ser reaberto.'])
+                ->withInput();
+        }
 
-        $validated['fornecedores_id'] = $validated['fornecedores_id'] ?? null;
+        if ($conta->status !== ContasPagar::STATUS_PAGO) {
+            $validated['data_pagamento'] = null;
+        }
 
         $conta->update($validated);
 
         return redirect()->route('pagina.lista.contas_pagar')->with('success', 'Conta a pagar atualizada com sucesso!');
+    }
+
+    public function baixar($id)
+    {
+        $conta = ContasPagar::findOrFail($id);
+
+        if ($conta->status !== ContasPagar::STATUS_ABERTO) {
+            return back()->withErrors(['status' => 'Apenas títulos abertos podem ser baixados.']);
+        }
+
+        $conta->update([
+            'status' => ContasPagar::STATUS_PAGO,
+            'data_pagamento' => today()->toDateString(),
+        ]);
+
+        return redirect()->route('pagina.editar.conta_pagar', ['id' => $conta->id])
+            ->with('success', 'Título baixado com sucesso!');
     }
 
     public function destroy($id)
@@ -95,5 +94,43 @@ class ContasPagarController extends Controller
         $conta->delete();
 
         return redirect()->route('pagina.lista.contas_pagar')->with('success', 'Conta a pagar excluida com sucesso!');
+    }
+
+    private function validarConta(Request $request, ?ContasPagar $conta = null): array
+    {
+        $statusAtual = old('status', optional($conta)->status ?? ContasPagar::STATUS_ABERTO);
+        if (! in_array($statusAtual, [ContasPagar::STATUS_ABERTO, ContasPagar::STATUS_PAGO, ContasPagar::STATUS_CANCELADO], true)) {
+            $statusAtual = ContasPagar::STATUS_ABERTO;
+        }
+
+        $request->merge(['status' => $statusAtual]);
+
+        return $request->validate(
+            [
+                'empresa_id' => 'required|uuid|exists:empresa,id',
+                'fornecedores_id' => 'required|uuid|exists:fornecedores,id',
+                'str_descricao' => 'required|string|max:255',
+                'dbl_valor' => 'required|numeric|min:0',
+                'data_vencimento' => 'required|date',
+                'status' => ['required', 'string', 'max:20', Rule::in([ContasPagar::STATUS_ABERTO, ContasPagar::STATUS_PAGO, ContasPagar::STATUS_CANCELADO])],
+                'str_observacao' => 'nullable|string',
+            ],
+            [
+                'empresa_id.required' => 'Selecione a empresa.',
+                'fornecedores_id.required' => 'Selecione o fornecedor.',
+                'str_descricao.required' => 'Informe a descrição.',
+                'dbl_valor.required' => 'Informe o valor.',
+                'data_vencimento.required' => 'Informe a data de vencimento.',
+            ],
+            [
+                'empresa_id' => 'empresa',
+                'fornecedores_id' => 'fornecedor',
+                'str_descricao' => 'descrição',
+                'dbl_valor' => 'valor',
+                'data_vencimento' => 'vencimento',
+                'status' => 'status',
+                'str_observacao' => 'observação',
+            ]
+        );
     }
 }

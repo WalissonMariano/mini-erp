@@ -11,6 +11,28 @@
     } else {
         $formAction = '#';
     }
+
+    $statusAtual = old('status', optional($conta)->status ?? \App\Models\Financeiro\ContasReceber::STATUS_ABERTO);
+    if (! in_array($statusAtual, [\App\Models\Financeiro\ContasReceber::STATUS_ABERTO, \App\Models\Financeiro\ContasReceber::STATUS_PAGO, \App\Models\Financeiro\ContasReceber::STATUS_CANCELADO], true)) {
+        $statusAtual = \App\Models\Financeiro\ContasReceber::STATUS_ABERTO;
+    }
+    $statusLabel = \App\Models\Financeiro\ContasReceber::statusLabels()[$statusAtual] ?? $statusAtual;
+    $tituloAberto = $statusAtual === \App\Models\Financeiro\ContasReceber::STATUS_ABERTO;
+    $dataRecebimento = old('data_recebimento', optional($conta)->data_recebimento?->format('Y-m-d') ?? '');
+    $dataRecebimentoLabel = $dataRecebimento !== '' ? \Illuminate\Support\Carbon::parse($dataRecebimento)->format('d/m/Y') : '—';
+
+    $descricaoHero = trim((string) old('str_descricao', optional($conta)->str_descricao ?? ''));
+    $clienteIdHero = (string) old('cliente_id', optional($conta)->cliente_id ?? '');
+    $nomeClienteHero = optional($conta)->cliente?->str_nome;
+    if ($nomeClienteHero === null && $clienteIdHero !== '') {
+        $nomeClienteHero = optional($clientes->firstWhere('id', $clienteIdHero))->str_nome;
+    }
+    $heroTitulo = match (true) {
+        $descricaoHero !== '' && $nomeClienteHero !== null && $nomeClienteHero !== '' => "{$descricaoHero} — {$nomeClienteHero}",
+        $descricaoHero !== '' => $descricaoHero,
+        $nomeClienteHero !== null && $nomeClienteHero !== '' => $nomeClienteHero,
+        default => 'Conta a receber',
+    };
 @endphp
 
 @vite('resources/css/app.css')
@@ -24,6 +46,12 @@
                     {{ $isEdit ? 'Atualize os dados do título a receber.' : 'Preencha os dados para cadastrar uma nova conta a receber.' }}
                 </p>
             </div>
+            @if ($isEdit)
+                <button type="button" class="app-btn app-btn--secondary" onclick="loadContent('{{ route('pagina.lista.contas_receber') }}')">
+                    <x-icon name="heroicon-o-arrow-left" class="app-icon" />
+                    Voltar
+                </button>
+            @endif
         </header>
 
         <div class="app-form">
@@ -55,14 +83,36 @@
                 @endif
 
                 <div class="app-form-toolbar">
-                    <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.contas_receber') }}')">Cancelar</button>
+                    @unless ($isEdit)
+                        <button class="app-btn app-btn--secondary" type="button" onclick="loadContent('{{ route('pagina.lista.contas_receber') }}')">Cancelar</button>
+                    @endunless
+                    @if ($isEdit && $tituloAberto && Route::has('pagina.baixar.conta_receber'))
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--secondary"
+                            formaction="{{ route('pagina.baixar.conta_receber', ['id' => $conta->id]) }}"
+                            onclick="return confirm('Baixar este título a receber?')">
+                            Baixar título
+                        </button>
+                    @endif
+                    @if ($isEdit && Route::has('pagina.deletar.conta_receber'))
+                        <button
+                            type="submit"
+                            class="app-btn app-btn--danger"
+                            formaction="{{ route('pagina.deletar.conta_receber', ['id' => $conta->id]) }}"
+                            name="_method"
+                            value="DELETE"
+                            onclick="return confirm('Excluir esta conta a receber permanentemente?')">
+                            Excluir conta
+                        </button>
+                    @endif
                     <button class="app-btn app-btn--primary" type="submit">
                         {{ $isEdit ? 'Salvar alterações' : 'Cadastrar conta' }}
                     </button>
                 </div>
 
                 <div class="app-form-hero">
-                    <strong>{{ old('str_descricao', optional($conta)->str_descricao ?: 'Conta a receber') }}</strong>
+                    <strong>{{ $heroTitulo }}</strong>
                 </div>
 
                 <div class="app-form-body">
@@ -70,39 +120,12 @@
                     <div class="app-field-group app-field-group--full">
                         <div class="app-field">
                             <label for="str_descricao">Descrição</label>
-                            <input type="text" id="str_descricao" name="str_descricao" maxlength="255" value="{{ old('str_descricao', optional($conta)->str_descricao ?? '') }}" placeholder="Ex.: Parcela pedido Y">
-                        </div>
-                    </div>
-
-                    <div class="app-section-title">Valores e datas</div>
-                    <div class="app-field-group app-field-group--three">
-                        <div class="app-field">
-                            <label for="dbl_valor">Valor (R$)</label>
-                            <input type="number" id="dbl_valor" name="dbl_valor" step="0.01" min="0" required
-                                value="{{ old('dbl_valor', optional($conta)->dbl_valor ?? '') }}">
-                        </div>
-                        <div class="app-field">
-                            <label for="data_vencimento">Vencimento</label>
-                            <input type="date" id="data_vencimento" name="data_vencimento" required
-                                value="{{ old('data_vencimento', optional($conta)->data_vencimento?->format('Y-m-d') ?? '') }}">
-                        </div>
-                        <div class="app-field">
-                            <label for="data_recebimento">Data recebimento</label>
-                            <input type="date" id="data_recebimento" name="data_recebimento"
-                                value="{{ old('data_recebimento', optional($conta)->data_recebimento?->format('Y-m-d') ?? '') }}">
+                            <input type="text" id="str_descricao" name="str_descricao" maxlength="255" required value="{{ old('str_descricao', optional($conta)->str_descricao ?? '') }}" placeholder="Ex.: Parcela pedido 10">
                         </div>
                     </div>
 
                     <div class="app-section-title">Status e vínculos</div>
-                    <div class="app-field-group">
-                        <div class="app-field">
-                            <label for="status">Status</label>
-                            <select id="status" name="status" required>
-                                @foreach (['aberto' => 'Aberto', 'pago' => 'Recebido', 'cancelado' => 'Cancelado'] as $val => $label)
-                                    <option value="{{ $val }}" {{ old('status', optional($conta)->status ?? 'aberto') === $val ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="app-field-group app-field-group--three">
                         <div class="app-field">
                             <label for="empresa_id">Empresa</label>
                             <select id="empresa_id" name="empresa_id" required>
@@ -115,13 +138,10 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
-
-                    <div class="app-field-group app-field-group--full">
                         <div class="app-field">
-                            <label for="cliente_id">Cliente (opcional)</label>
-                            <select id="cliente_id" name="cliente_id">
-                                <option value="">(sem vínculo)</option>
+                            <label for="cliente_id">Cliente</label>
+                            <select id="cliente_id" name="cliente_id" required>
+                                <option value="" disabled {{ old('cliente_id', optional($conta)->cliente_id) ? '' : 'selected' }}>Selecione...</option>
                                 @foreach ($clientes as $c)
                                     <option value="{{ $c->id }}"
                                         {{ (string) old('cliente_id', optional($conta)->cliente_id ?? '') === (string) $c->id ? 'selected' : '' }}>
@@ -129,6 +149,37 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="app-field">
+                            <label for="status">Status</label>
+                            <input type="text" id="status" value="{{ $statusLabel }}" readonly disabled>
+                            <input type="hidden" name="status" value="{{ $statusAtual }}">
+                        </div>
+                    </div>
+
+                    <div class="app-section-title">Valores e datas</div>
+                    <div class="app-field-group app-field-group--three">
+                        <div class="app-field">
+                            <label for="dbl_valor">Valor</label>
+                            <div class="app-repeater__money">
+                                <span class="app-repeater__money-prefix">R$</span>
+                                <input type="number" id="dbl_valor" name="dbl_valor" class="cr-valor" step="0.01" min="0" required
+                                    value="{{ old('dbl_valor', optional($conta)->dbl_valor ?? '') }}">
+                            </div>
+                        </div>
+                        <div class="app-field">
+                            <label for="data_vencimento">Vencimento</label>
+                            <input type="date" id="data_vencimento" name="data_vencimento" required
+                                value="{{ old('data_vencimento', optional($conta)->data_vencimento?->format('Y-m-d') ?? '') }}">
+                        </div>
+                        <div class="app-field">
+                            <label for="data_recebimento">Data recebimento</label>
+                            @if ($tituloAberto)
+                                <input type="text" id="data_recebimento" value="—" readonly disabled>
+                            @else
+                                <input type="text" id="data_recebimento" value="{{ $dataRecebimentoLabel }}" readonly disabled>
+                                <input type="hidden" name="data_recebimento" value="{{ $dataRecebimento }}">
+                            @endif
                         </div>
                     </div>
 
@@ -168,4 +219,24 @@
         window.parent.document.getElementById('content-frame').src = url;
         setTimeout(refreshIframeLayout, 200);
     }
+
+    (function () {
+        function formatValor(input) {
+            if (!input || input.value === '') {
+                return;
+            }
+            const valor = parseFloat(String(input.value).replace(',', '.'));
+            if (Number.isNaN(valor) || valor < 0) {
+                return;
+            }
+            input.value = valor.toFixed(2);
+        }
+
+        document.querySelectorAll('.cr-valor').forEach(function (input) {
+            formatValor(input);
+            input.addEventListener('blur', function () {
+                formatValor(input);
+            });
+        });
+    })();
 </script>

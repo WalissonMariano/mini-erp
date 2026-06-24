@@ -1,10 +1,6 @@
 @vite('resources/css/app.css')
 <div class="app-shell">
     <div class="app-page">
-        @if (session('success'))
-            <div class="app-alert app-alert--success">{{ session('success') }}</div>
-        @endif
-
         <header class="app-header">
             <div class="app-header__text">
                 <p class="app-header__eyebrow">Financeiro</p>
@@ -46,8 +42,15 @@
                                 <td>{{ $conta->data_vencimento?->format('d/m/Y') ?? '—' }}</td>
                                 <td>{{ $conta->data_recebimento?->format('d/m/Y') ?? '—' }}</td>
                                 <td>
-                                    @php $st = strtolower((string) $conta->status); @endphp
-                                    <span class="app-status app-status--{{ $st === 'pago' ? 'pago' : ($st === 'cancelado' ? 'cancelado' : 'aberto') }}">{{ $conta->status }}</span>
+                                    @php
+                                        $st = strtolower((string) $conta->status);
+                                        $statusClass = match ($st) {
+                                            \App\Models\Financeiro\ContasReceber::STATUS_PAGO => 'pago',
+                                            \App\Models\Financeiro\ContasReceber::STATUS_CANCELADO => 'cancelado',
+                                            default => 'aberto',
+                                        };
+                                    @endphp
+                                    <span class="app-status app-status--{{ $statusClass }}">{{ $conta->status_label }}</span>
                                 </td>
                             </tr>
                         @empty

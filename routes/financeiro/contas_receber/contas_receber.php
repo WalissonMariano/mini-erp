@@ -17,5 +17,8 @@ Route::post('salvar-conta-receber', [ContasReceberController::class, 'store'])
 Route::put('atualizar-conta-receber/{id}', [ContasReceberController::class, 'update'])
     ->name('pagina.atualizar.conta_receber');
 
+Route::put('baixar-conta-receber/{id}', [ContasReceberController::class, 'baixar'])
+    ->name('pagina.baixar.conta_receber');
+
 Route::delete('deletar-conta-receber/{id}', [ContasReceberController::class, 'destroy'])
     ->name('pagina.deletar.conta_receber');
