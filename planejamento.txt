@@ -7,9 +7,10 @@ criar crud de vendas  OK
 criar crud de compras OK
 criar crud contas a pagar OK
 criar crud contas a receber OK
-colocar compra e a venda para gerar financeiro (botao baixar pedido troca status e gere financeiro)
-colocar dashboard para funcionar
-criar parametro gera financeiro ou nao
+criar parametro gera financeiro ou nao OK
+colocar compras gera financeiro OK
+colocar vendas gera financeiro OK 
+colocar dashboard
 colocar permissoes por grupo
 tirar vinculo do usuario a empresa (opcional)
 colocar relatorio de contagem de estoque 

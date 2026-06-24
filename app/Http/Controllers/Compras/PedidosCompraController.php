@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Compras;
 use App\Http\Controllers\Controller;
 use App\Models\Cadastro\Empresa;
 use App\Models\Cadastro\Fornecedores;
+use App\Models\Configuracao\Parametros;
+use App\Models\Financeiro\ContasPagar;
 use App\Models\Compras\PedidosCompra;
 use App\Models\Compras\PedidosCompraItens;
 use App\Models\Estoque\Itens;
@@ -135,7 +137,13 @@ class PedidosCompraController extends Controller
             return back()->withErrors(['status' => 'Apenas pedidos abertos podem ser baixados.']);
         }
 
-        $pedidoCompra->update(['status' => PedidosCompra::STATUS_BAIXADO]);
+        DB::transaction(function () use ($pedidoCompra): void {
+            $pedidoCompra->update(['status' => PedidosCompra::STATUS_BAIXADO]);
+
+            if (Parametros::configuracao()->geraFinanceiro()) {
+                $this->gerarContaPagarDoPedido($pedidoCompra->fresh());
+            }
+        });
 
         return redirect()->route('pagina.editar.pedido_compra', ['id' => $pedidoCompra->id])
             ->with('success', 'Pedido baixado com sucesso!');
@@ -248,5 +256,24 @@ class PedidosCompraController extends Controller
     {
         $soma = (float) $pedido->itens()->sum('dbl_valor_total');
         $pedido->update(['dbl_valor_total' => $soma]);
+    }
+
+    private function gerarContaPagarDoPedido(PedidosCompra $pedido): void
+    {
+        $numero = $pedido->numero_pedido;
+        $descricao = $numero !== null
+            ? "nº {$numero}"
+            : 'nº —';
+
+        ContasPagar::create([
+            'empresa_id' => $pedido->empresa_id,
+            'fornecedores_id' => $pedido->fornecedores_id,
+            'str_descricao' => $descricao,
+            'dbl_valor' => $pedido->dbl_valor_total,
+            'data_vencimento' => $pedido->data_pedido,
+            'data_pagamento' => null,
+            'status' => ContasPagar::STATUS_ABERTO,
+            'str_observacao' => $pedido->str_observacao,
+        ]);
     }
 }

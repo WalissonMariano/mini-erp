@@ -89,6 +89,9 @@ Route::middleware(['auth'])->group(function () {
     require __DIR__ . '/financeiro/contas_pagar/contas_pagar.php';
     require __DIR__ . '/financeiro/contas_receber/contas_receber.php';
 
+    // Configuração — parâmetros
+    require __DIR__ . '/configuracao/parametros/parametros.php';
+
 });
 
 // Rota fallback para páginas não encontradas

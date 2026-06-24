@@ -139,7 +139,7 @@
                     </a>
                     <ul class="submenu">
                         <li>
-                            <a href="javascript:void(0)" onclick="loadContent('#', this)">
+                            <a href="javascript:void(0)" onclick="loadContent('{{ route('pagina.parametros') }}', this)">
                                 <x-icon name="heroicon-o-adjustments-horizontal" class="nav-icon nav-icon--sm" />
                                 <span>Parâmetros</span>
                             </a>

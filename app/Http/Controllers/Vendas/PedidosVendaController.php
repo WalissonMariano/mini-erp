@@ -7,6 +7,8 @@ use App\Models\Cadastro\Clientes;
 use App\Models\Cadastro\Empresa;
 use App\Models\Cadastro\Vendedores;
 use App\Models\Estoque\Itens;
+use App\Models\Configuracao\Parametros;
+use App\Models\Financeiro\ContasReceber;
 use App\Models\Venda\PedidosVenda;
 use App\Models\Venda\PedidosVendaItens;
 use Illuminate\Http\Request;
@@ -142,7 +144,13 @@ class PedidosVendaController extends Controller
             return back()->withErrors(['status' => 'Apenas pedidos abertos podem ser baixados.']);
         }
 
-        $pedidoVenda->update(['status' => PedidosVenda::STATUS_BAIXADO]);
+        DB::transaction(function () use ($pedidoVenda): void {
+            $pedidoVenda->update(['status' => PedidosVenda::STATUS_BAIXADO]);
+
+            if (Parametros::configuracao()->geraFinanceiro()) {
+                $this->gerarContaReceberDoPedido($pedidoVenda->fresh());
+            }
+        });
 
         return redirect()->route('pagina.editar.pedido_venda', ['id' => $pedidoVenda->id])
             ->with('success', 'Pedido baixado com sucesso!');
@@ -259,5 +267,24 @@ class PedidosVendaController extends Controller
     {
         $soma = (float) $pedido->itens()->sum('dbl_valor_total');
         $pedido->update(['dbl_valor_total' => $soma]);
+    }
+
+    private function gerarContaReceberDoPedido(PedidosVenda $pedido): void
+    {
+        $numero = $pedido->numero_pedido;
+        $descricao = $numero !== null
+            ? "nº {$numero}"
+            : 'nº —';
+
+        ContasReceber::create([
+            'empresa_id' => $pedido->empresa_id,
+            'cliente_id' => $pedido->cliente_id,
+            'str_descricao' => $descricao,
+            'dbl_valor' => $pedido->dbl_valor_total,
+            'data_vencimento' => $pedido->data_pedido,
+            'data_recebimento' => null,
+            'status' => ContasReceber::STATUS_ABERTO,
+            'str_observacao' => $pedido->str_observacao,
+        ]);
     }
 }
