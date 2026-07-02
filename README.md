@@ -64,7 +64,7 @@ Opcionalmente, você pode usar o [Laravel Herd](https://herd.laravel.com/) no ma
 1. Clone o repositório:
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone https://github.com/WalissonMariano/mini-erp.git
 cd mini-erp
 ```
 
