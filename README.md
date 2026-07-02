@@ -21,7 +21,7 @@ Este é um projeto de um Mini ERP (Enterprise Resource Planning) desenvolvido pa
 
 ### Financeiro
 
-![Contas a pagar](docs/screenshots/financeiro-contas-pagar.png)
+![Contas a pagar](docs/screenshots/financeiro-contas-receber.png)
 
 ### Estoque
 
@@ -30,10 +30,6 @@ Este é um projeto de um Mini ERP (Enterprise Resource Planning) desenvolvido pa
 ### Cadastro
 
 ![Cadastro de clientes](docs/screenshots/cadastro-clientes.png)
-
-### Configuração
-
-![Parâmetros do sistema](docs/screenshots/config-parametros.png)
 
 ## Funcionalidades
 - **Controle de Estoque**: Permite gerenciar o estoque de produtos, incluindo entradas, saídas e níveis de estoque.
