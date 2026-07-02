@@ -121,19 +121,4 @@ php artisan migrate:fresh
 # Rodar testes
 php artisan test
 ```
-## Contribuição
-Contribuições são bem-vindas! Se você deseja contribuir para este projeto, por favor siga os passos abaixo:
-1. Fork este repositório.
-2. Crie uma branch para sua feature ou correção de bug:
-```bashgit checkout -b minha-feature
-```
-3. Faça suas alterações e commit:
-```bashgit commit -m "Descrição da minha feature ou correção de bug"
-```
-4. Envie suas alterações para o repositório remoto:
-```bashgit push origin minha-feature
-```
-5. Abra um Pull Request para revisão.
-## Licença
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.   ## Contato
-Se você tiver alguma dúvida ou sugestão, sinta-se à vontade para entrar em contato:
+
