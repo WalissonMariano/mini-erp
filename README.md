@@ -1,5 +1,79 @@
 # Fluxo Gestão - Mini ERP
+
+<!-- Banner principal: docs/screenshots/banner.png -->
+![Fluxo Gestão - Mini ERP](docs/screenshots/banner.png)
+
 Este é um projeto de um Mini ERP (Enterprise Resource Planning) desenvolvido para fins educacionais. O objetivo deste projeto é fornecer uma solução simples e eficiente para a gestão de recursos empresariais, incluindo controle de estoque, vendas, compras e finanças.
+
+## Capturas de tela
+
+Salve as imagens em `docs/screenshots/` e use o formato abaixo em cada ponto:
+
+```markdown
+![Descrição da tela](docs/screenshots/nome-do-arquivo.png)
+```
+
+### Acesso e navegação
+
+| Tela | Arquivo sugerido |
+|------|------------------|
+| Banner do projeto | `docs/screenshots/banner.png` |
+| Login | `docs/screenshots/login.png` |
+| Menu principal | `docs/screenshots/menu.png` |
+| Dashboard | `docs/screenshots/dashboard.png` |
+
+![Tela de login](docs/screenshots/login.png)
+
+### Cadastro
+
+| Tela | Arquivo sugerido |
+|------|------------------|
+| Empresas | `docs/screenshots/cadastro-empresas.png` |
+| Usuários | `docs/screenshots/cadastro-usuarios.png` |
+| Grupos | `docs/screenshots/cadastro-grupos.png` |
+| Clientes | `docs/screenshots/cadastro-clientes.png` |
+| Vendedores | `docs/screenshots/cadastro-vendedores.png` |
+| Fornecedores | `docs/screenshots/cadastro-fornecedores.png` |
+
+![Cadastro de clientes](docs/screenshots/cadastro-clientes.png)
+
+### Estoque
+
+| Tela | Arquivo sugerido |
+|------|------------------|
+| Itens | `docs/screenshots/estoque-itens.png` |
+| Categorias de itens | `docs/screenshots/estoque-categorias.png` |
+| Embalagens | `docs/screenshots/estoque-embalagens.png` |
+
+![Listagem de itens](docs/screenshots/estoque-itens.png)
+
+### Vendas e compras
+
+| Tela | Arquivo sugerido |
+|------|------------------|
+| Pedidos de venda | `docs/screenshots/vendas-pedidos.png` |
+| Formulário de pedido de venda | `docs/screenshots/vendas-pedido-form.png` |
+| Pedidos de compra | `docs/screenshots/compras-pedidos.png` |
+| Formulário de pedido de compra | `docs/screenshots/compras-pedido-form.png` |
+
+![Pedidos de venda](docs/screenshots/vendas-pedidos.png)
+
+### Financeiro
+
+| Tela | Arquivo sugerido |
+|------|------------------|
+| Contas a pagar | `docs/screenshots/financeiro-contas-pagar.png` |
+| Contas a receber | `docs/screenshots/financeiro-contas-receber.png` |
+
+![Contas a pagar](docs/screenshots/financeiro-contas-pagar.png)
+
+### Configuração
+
+| Tela | Arquivo sugerido |
+|------|------------------|
+| Parâmetros do sistema | `docs/screenshots/config-parametros.png` |
+
+![Parâmetros do sistema](docs/screenshots/config-parametros.png)
 
 ## Funcionalidades
 - **Controle de Estoque**: Permite gerenciar o estoque de produtos, incluindo entradas, saídas e níveis de estoque.
