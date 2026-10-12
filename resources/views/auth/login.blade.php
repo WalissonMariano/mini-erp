@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @include('layouts.partials.favicon')
     <title>ERP — Entrar</title>
     @vite('resources/css/components/login.css')
 </head>
@@ -31,6 +32,21 @@
                 </div>
             @endif
 
+            <div class="auth-demo">
+                <strong>Acesso de demonstração</strong>
+                <p>Use as credenciais abaixo para explorar o sistema:</p>
+                <dl>
+                    <div>
+                        <dt>E-mail</dt>
+                        <dd><code>admin@admin.com</code></dd>
+                    </div>
+                    <div>
+                        <dt>Senha</dt>
+                        <dd><code>123456</code></dd>
+                    </div>
+                </dl>
+            </div>
+
             <form method="POST" action="{{ route('pagina.login.post') }}" class="auth-form">
                 @csrf
                 <div class="auth-field">
@@ -40,7 +56,7 @@
                         type="email"
                         id="email"
                         name="email"
-                        value="{{ old('email') }}"
+                        value="{{ old('email', 'admin@admin.com') }}"
                         autocomplete="username"
                         required
                         autofocus
@@ -56,6 +72,7 @@
                         type="password"
                         id="password"
                         name="password"
+                        value="123456"
                         autocomplete="current-password"
                         required
                     >

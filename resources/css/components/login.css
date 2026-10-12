@@ -134,6 +134,64 @@ body {
 	padding-left: 18px;
 }
 
+.auth-demo {
+	margin: 0 0 18px 8px;
+	padding: 12px 14px;
+	border-radius: 8px;
+	border: 1px solid #bae6fd;
+	background: #f0f9ff;
+}
+
+.auth-demo strong {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	color: var(--corp-accent);
+}
+
+.auth-demo > p {
+	margin: 0 0 10px;
+	font-size: 0.75rem;
+	line-height: 1.45;
+	color: var(--corp-accent-soft);
+}
+
+.auth-demo dl {
+	display: grid;
+	gap: 6px;
+	margin: 0;
+}
+
+.auth-demo dl > div {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.auth-demo dt {
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--corp-text-muted);
+}
+
+.auth-demo dd {
+	margin: 0;
+}
+
+.auth-demo dd code {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.8125rem;
+	color: var(--corp-accent);
+	background: var(--corp-surface);
+	border: 1px solid #bae6fd;
+	border-radius: 6px;
+	padding: 2px 8px;
+}
+
 .auth-form {
 	padding-left: 8px;
 }
